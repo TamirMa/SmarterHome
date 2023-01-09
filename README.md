@@ -1,5 +1,7 @@
 # SmartHome
 
+Hi!!
+
 
 
 ## Getting started

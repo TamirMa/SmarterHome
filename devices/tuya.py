@@ -14,3 +14,6 @@ class TuyaSwitchDevice(TuyaBaseDevice, SwitchInterface):
     def turn_off(self):
         self._d.set_status(False, self._sub_device_id)
 
+    def is_on(self):
+        return self._d.status()['dps'][str(self._sub_device_id)] == True
+

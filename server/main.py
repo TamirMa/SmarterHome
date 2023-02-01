@@ -1,3 +1,7 @@
+from dotenv import load_dotenv
+
+load_dotenv()
+
 from devices.manager import DeviceManager
 from server.dependencies import get_token_header, get_query_token
 from fastapi import FastAPI, Depends

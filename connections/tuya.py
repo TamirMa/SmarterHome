@@ -2,7 +2,10 @@ import json
 import tinytuya
 
 class TuyaConnection(object):
-    def __init__(self, devices_json_path):
+    def __init__(self, *args, **kwargs):
+        super(TuyaConnection, self).__init__(*args, **kwargs)
+        
+        devices_json_path = self._connection_params.get("devices_json_path"), 
         self._devices_json = json.loads(open(devices_json_path, "r").read())
 
     def get_dict_of_device(self, device_id):

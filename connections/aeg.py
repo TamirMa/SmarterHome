@@ -1,10 +1,20 @@
 import pyelectroluxconnect
 
-class AEGConnection(object):
-    def __init__(self, username, password):
+from connections.connection import Connection
+
+class AEGConnection(Connection):
+
+    NAME = "AEG"
+
+    def __init__(self, *args, **kwargs):
+        super(AEGConnection, self).__init__(*args, **kwargs)
+        
+        if not (self._connection_params.get("username")  and self._connection_params.get("password")):
+            raise Exception("AEG username/password missing")
+        
         self._ses = pyelectroluxconnect.Session(
-            username, 
-            password, 
+            self._connection_params.get("username"), 
+            self._connection_params.get("password"), 
             region="emea", 
             tokenFileName = ".electrolux-token", 
             country = "FR", 

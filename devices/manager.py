@@ -17,7 +17,7 @@ class DeviceManager(object):
 
     CONNECTIONS = [
         AEGConnection,
-        # TuyaConnection,
+        TuyaConnection,
     ]
 
     def __init__(self) -> None:

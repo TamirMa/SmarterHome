@@ -2,6 +2,7 @@ import os
 import json
 
 from connections.aeg import AEGConnection
+from connections.shelly import ShellyConnection
 from connections.tuya import TuyaConnection
 
 CONNECTION_PARAMS_FILE = os.getenv('CONNECTION_PARAMS_FILE')
@@ -18,6 +19,7 @@ class DeviceManager(object):
     CONNECTIONS = [
         AEGConnection,
         TuyaConnection,
+        ShellyConnection,
     ]
 
     def __init__(self) -> None:

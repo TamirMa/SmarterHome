@@ -9,6 +9,7 @@ class TuyaConnection(Connection):
 
     DEVICES = {
         "Light": TuyaSwitchDevice,
+        "Socket": TuyaSwitchDevice,
     }
 
     def __init__(self, *args, **kwargs):

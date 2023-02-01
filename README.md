@@ -2,6 +2,26 @@
 
 Hi!!
 
+## Guidelines
+
+Control Devices:
+FastAPI to control the devices
+	AirCondition - Tuya
+	Socket - Tuya
+	Curtains
+		ShellyDevice
+		TuyaDevices
+	Lights
+		TuyaDevices
+		ShellyDevice
+	Dishwasher - Bosch
+	Oven - AEG
+	doorbell updater
+TelegramBot
+	ReceiveCommand and Execute
+	Service for approving flows
+Scheduler
+	Pre-defined actions by times
 
 
 ## Getting started

@@ -1,13 +1,13 @@
 
-from devices.generic import SwitchDevice
+from devices.generic import SwitchInterface, GenericDevice
 
 
-class TuyaBaseDevice(object):
-    def __init__(self, tuya_connection, device_id, sub_device_id=1):
-        self._d = tuya_connection.initialize_device(device_id)
-        self._sub_device_id = sub_device_id
+class TuyaBaseDevice(GenericDevice):
+    def __init__(self, *args, **kwargs):
+        super(TuyaBaseDevice, self).__init__(*args, **kwargs)
+        self._d = self._connection.initialize_device(self._device_id)
 
-class TuyaSwitchDevice(TuyaBaseDevice, SwitchDevice):
+class TuyaSwitchDevice(TuyaBaseDevice, SwitchInterface):
     def turn_on(self):
         self._d.set_status(True, self._sub_device_id)
 

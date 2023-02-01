@@ -1,5 +1,5 @@
 from enum import Enum
-from devices.generic import SwitchDevice
+from devices.generic import SwitchInterface
 from starlette_context import context
 from fastapi import APIRouter
 
@@ -11,13 +11,13 @@ class LightState(str, Enum):
     
 @control_router.get("/light/{device_id}/state")
 async def get_light_state(device_id):
-    light : SwitchDevice = context.devices.get_device_by_name(device_id)
+    light : SwitchInterface = context.devices.get_device_by_name(device_id)
     return light.is_on()
 
 
 @control_router.post("/light/{device_id}")
 async def change_light_state(device_id, light_state: LightState):
-    light : SwitchDevice = context.devices.get_device_by_name(device_id)
+    light : SwitchInterface = context.devices.get_device_by_name(device_id)
     if light_state == LightState.ON:
         light.turn_on()
     elif light_state == LightState.OFF:

@@ -1,12 +1,17 @@
 class GenericDevice(object):
-    def __init__(self, device_id):
+    def __init__(self, connection, device_id, sub_device_id=None):
+        self._connection = connection
         self._device_id = device_id
+        self._sub_device_id = sub_device_id
     
-class SwitchDevice(GenericDevice):
+class SwitchInterface(object):
 
     def turn_on(self):
-        raise NotImplemented()
+        raise NotImplementedError()
 
     def turn_off(self):
-        raise NotImplemented()
+        raise NotImplementedError()
+
+    def is_on(self):
+        raise NotImplementedError()
 

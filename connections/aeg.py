@@ -1,3 +1,4 @@
+from devices.aeg import AEGOven
 import pyelectroluxconnect
 
 from connections.connection import Connection
@@ -5,6 +6,10 @@ from connections.connection import Connection
 class AEGConnection(Connection):
 
     NAME = "AEG"
+
+    DEVICES = {
+        "Oven": AEGOven,
+    }
 
     def __init__(self, *args, **kwargs):
         super(AEGConnection, self).__init__(*args, **kwargs)

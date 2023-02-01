@@ -5,9 +5,13 @@ from connections.aeg import AEGConnection
 from connections.tuya import TuyaConnection
 
 CONNECTION_PARAMS_FILE = os.getenv('CONNECTION_PARAMS_FILE')
+DEVICES_FILE = os.getenv('DEVICES_FILE')
 
 if CONNECTION_PARAMS_FILE == None:
     raise Exception("ConnectionsParams file is mandetory")
+
+if DEVICES_FILE == None:
+    raise Exception("Devices file is mandetory")
 
 class DeviceManager(object):
 
@@ -26,9 +30,19 @@ class DeviceManager(object):
             for ConnectionClass in self.CONNECTIONS
         }
 
-        # self._devices = {
-        #     "aeg_oven" : AEGOven(self._connections.get("aeg"), "")
-        # }
+        if not os.path.exists(DEVICES_FILE):
+            raise Exception(f"Couldn't open the Devices file at '{DEVICES_FILE}'")
+
+        all_devices = json.loads(open(DEVICES_FILE, "r").read())
+        self._devices = {
+            device_definition["name"] : self._connections.get(device_definition["connection"]).create_device(device_definition) if self._connections.get(device_definition["connection"]) else None
+            for device_definition in all_devices
+        }
         
     def get_device_by_name(self, device_name):
         print (f"Getting device {device_name}")
+        device = self._devices.get(device_name)
+        if not device:
+            raise Exception(f"Couldn't get the device {device_name}")
+
+        return device

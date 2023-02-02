@@ -36,10 +36,14 @@ class AEGConnection(Connection):
         appllist = self._ses.getAppliances()
         print(appllist)
         for appliance in appllist:  
-	        print(self._ses.getApplianceConnectionState(appliance))
+            print(self._ses.getApplianceConnectionState(appliance))
 
     def get_profile_for_appliance(self, appliance):
         print(self._ses.getApplianceProfile(appliance))
 
     def send_command(self, appliance, hacl, value, destination):
+        print (f"Sending command {destination+':'+hacl} with value {value} to {appliance}")
         self._ses.setHacl(appliance, hacl, value, destination)
+
+    def read_state(self, appliance):
+        return self._ses.getApplianceState(appliance, paramName = None, rawOutput = False)

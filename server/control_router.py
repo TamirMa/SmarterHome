@@ -1,4 +1,5 @@
 from enum import Enum
+from devices.aeg import AEGOven
 from devices.generic import SwitchInterface
 from starlette_context import context
 from fastapi import APIRouter
@@ -25,7 +26,14 @@ async def change_light_state(device_id, light_state: LightState):
     else:
         raise Exception(f"Invalid state for light {light_state}")
     
-@control_router.get("/oven/{device_id}/status")
-async def root(device_id):
-    oven = context.devices.get_device_by_name(device_id)
+@control_router.post("/oven/{device_id}/on")
+async def turn_on_oven(device_id, program: AEGOven.PROGRAMS, temperature: int):
+    oven : AEGOven = context.devices.get_device_by_name(device_id)
+    oven.turn_on(program, temperature)
+    return {"message": f"Getting the status for the device {oven}"}
+
+@control_router.post("/oven/{device_id}/off")
+async def turn_off_oven(device_id):
+    oven : AEGOven = context.devices.get_device_by_name(device_id)
+    oven.turn_off()
     return {"message": f"Getting the status for the device {oven}"}

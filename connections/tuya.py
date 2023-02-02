@@ -28,7 +28,7 @@ class TuyaConnection(Connection):
         device_dict = self.get_dict_of_device(device_id)
         return tinytuya.OutletDevice(
            dev_id=device_dict["id"],
-           address='',
+           address=device_dict["ip"],
            local_key=device_dict["key"],
            version="3.4",
         )

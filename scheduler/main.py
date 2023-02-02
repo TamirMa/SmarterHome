@@ -128,12 +128,12 @@ def scheduler_main():
     schedule.every().friday.at('23:30').do(prepare_to_sleep)
     schedule.every().saturday.at('01:30').do(shutdown_livingroom)
     schedule.every().saturday.at('08:30').do(shabat_morning)
-    schedule.every().friday.at('13:00').do(turn_on_oven)
+    schedule.every().saturday.at('13:00').do(turn_on_oven)
     schedule.every().saturday.at('14:00').do(shabat_lunch)
-    schedule.every().friday.at('15:00').do(turn_off_oven)
+    schedule.every().saturday.at('15:00').do(turn_off_oven)
     schedule.every().saturday.at('16:30').do(shabat_before_exit)
 
-    
+    print(schedule.get_jobs())
     while True:
         schedule.run_pending()
         time.sleep(1)

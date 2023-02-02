@@ -10,10 +10,10 @@ class ShellyBaseDevice(GenericDevice):
         
 class ShellySwitchDevice(ShellyBaseDevice, SwitchInterface):
     def turn_on(self):
-        self._d.relay(0, turn=True)
+        self._d.relay(self._sub_device_id if self._sub_device_id != None else 0, turn=True)
 
     def turn_off(self):
-        self._d.relay(0, turn=False)
+        self._d.relay(self._sub_device_id if self._sub_device_id != None else 0, turn=False)
 
     def is_on(self):
         super(ShellySwitchDevice, self).is_on()

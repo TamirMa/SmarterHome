@@ -59,6 +59,7 @@ def shutdown_livingroom():
     Turn Off - Balcony, Entrance Light, Kitchen Lights, Living Room Light, Toilet, Hand Wash Sink, Kitchen Socket, DiningTable
     Close living room curtain
     """
+    change_light_state("DiningTableLight", LightState.OFF)
     change_light_state("BalconyLight", LightState.OFF)
     change_light_state("EntranceLight", LightState.OFF)
     change_light_state("KitchenMainLight", LightState.OFF)
@@ -110,19 +111,19 @@ def scheduler_main():
     # schedule.every().minute.at(":17").do(job)
 
     shabat_entrance()
-    time.sleep(1)
+    time.sleep(2)
     shabat_dinner()
-    time.sleep(1)
+    time.sleep(2)
     prepare_to_sleep()
-    time.sleep(1)
+    time.sleep(2)
     shutdown_livingroom()
-    time.sleep(1)
+    time.sleep(2)
     shabat_morning()
-    time.sleep(1)
+    time.sleep(2)
     shabat_lunch()
-    time.sleep(1)
+    time.sleep(2)
     shabat_before_exit()
-    time.sleep(1)
+    time.sleep(2)
     return
     # schedule.every(10).seconds.do(job)
     schedule.every().friday.at('16:30').do(shabat_entrance)

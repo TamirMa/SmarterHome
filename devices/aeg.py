@@ -71,11 +71,11 @@ class AEGOven(GenericDevice):
         if not program_code:
             raise Exception(f"Couldn't find a code for program {program_name}")
             
-        if self._updated_state["OV1:" + self.CODES.PROGRAM]['stringValue'] != program_code:
-            self._connection.send_command(self._device_id, AEGOven.CODES.PROGRAM, "0x" + program_code, "OV1")
+        # if self._updated_state["OV1:" + self.CODES.PROGRAM]['stringValue'] != program_code:
+        self._connection.send_command(self._device_id, AEGOven.CODES.PROGRAM, "0x" + program_code, "OV1")
     
     def _set_temperature(self, temperature):
-        if self._updated_state["OV1:" + self.CODES.TEMPERATURE]['container']['1']['numberValue'] != temperature:
-            self._connection.send_command(self._device_id, AEGOven.CODES.TEMPERATURE, [{"1":str(temperature)},{"3":"0"},{"0":"0"}], "OV1")
+        # if self._updated_state["OV1:" + self.CODES.TEMPERATURE]['container']['1']['numberValue'] != temperature:
+        self._connection.send_command(self._device_id, AEGOven.CODES.TEMPERATURE, [{"1":str(temperature)},{"3":"0"},{"0":"0"}], "OV1")
 
     

@@ -89,6 +89,8 @@ def shabat_morning():
     """
     change_light_state("GuestRestroomsToiletLight", LightState.ON)
     
+def prepare_to_lunch():
+    change_light_state("KitchenSocket", LightState.ON)
 
 def shabat_lunch():
     """
@@ -104,6 +106,7 @@ def shabat_before_exit():
     Turn On - Balcony, Living Room Light, Hand Wash Sink
     Turn Off - DiningTable
     """
+    change_light_state("KitchenSocket", LightState.OFF)
     change_light_state("BalconyLight", LightState.ON)
     change_light_state("LivingRoomLight", LightState.ON)
     change_light_state("GuestRestroomsSinkLight", LightState.ON)
@@ -128,6 +131,7 @@ def scheduler_main():
     schedule.every().friday.at('23:30').do(prepare_to_sleep)
     schedule.every().saturday.at('01:30').do(shutdown_livingroom)
     schedule.every().saturday.at('08:30').do(shabat_morning)
+    schedule.every().saturday.at('11:00').do(prepare_to_lunch)
     schedule.every().saturday.at('13:00').do(turn_on_oven)
     schedule.every().saturday.at('14:00').do(shabat_lunch)
     schedule.every().saturday.at('15:00').do(turn_off_oven)

@@ -19,6 +19,6 @@ class Connection(object):
         try:
             return Device(self, device_id, sub_device_id=device_definition.get("sub_device_id"))
         except Exception as e:
-            print (f"Exception when creating a device: {Device.__name__}, {device_definition}")
-            
+            print (f"Exception when creating a device: {Device.__name__}, {device_definition} - {str(e)}")
+
         

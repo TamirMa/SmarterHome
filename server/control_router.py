@@ -1,6 +1,6 @@
 from enum import Enum
 from devices.aeg import AEGOven
-from devices.generic import SwitchInterface
+from devices.generic import CurtainInterface, SwitchInterface
 from starlette_context import context
 from fastapi import APIRouter
 
@@ -10,11 +10,15 @@ class LightState(str, Enum):
     ON = "on"
     OFF = "off"
     
+class CurtainState(str, Enum):
+    OPEN = "open"
+    CLOSE = "close"
+    STOP = "stop"
+
 @control_router.get("/light/{device_id}/state")
 async def get_light_state(device_id):
     light : SwitchInterface = context.devices.get_device_by_name(device_id)
     return light.is_on()
-
 
 @control_router.post("/light/{device_id}")
 @control_router.get("/light/{device_id}")
@@ -27,6 +31,18 @@ async def change_light_state(device_id, light_state: LightState):
     else:
         raise Exception(f"Invalid state for light {light_state}")
     
+@control_router.post("/curtain/{device_id}/state")
+async def change_light_state(device_id, curtain_state: CurtainState):
+    curtain : CurtainInterface = context.devices.get_device_by_name(device_id)
+    if curtain_state == CurtainState.OPEN:
+        curtain.open()
+    elif curtain_state == CurtainState.CLOSE:
+        curtain.close()
+    elif curtain_state == CurtainState.STOP:
+        curtain.stop()
+    else:
+        raise Exception(f"Invalid state for curtain {curtain_state}")
+
 @control_router.post("/oven/{device_id}/on")
 async def turn_on_oven(device_id, program: AEGOven.PROGRAMS, temperature: int):
     oven : AEGOven = context.devices.get_device_by_name(device_id)

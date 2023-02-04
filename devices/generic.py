@@ -15,3 +15,12 @@ class SwitchInterface(object):
     def is_on(self):
         raise NotImplementedError()
 
+class CurtainInterface(object):
+    def open(self):
+        raise NotImplementedError()
+
+    def close(self):
+        raise NotImplementedError()
+
+    def stop(self):
+        raise NotImplementedError()

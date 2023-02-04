@@ -7,6 +7,7 @@ from connections.homeconnect import HomeConnectConnection
 from connections.shelly import ShellyConnection
 from connections.smartthings import SmartThingsConnection
 from connections.tuya import TuyaConnection
+from connections.yeelight import YeelightConnection
 
 CONNECTION_PARAMS_FILE = os.getenv('CONNECTION_PARAMS_FILE')
 DEVICES_FILE = os.getenv('DEVICES_FILE')
@@ -26,6 +27,7 @@ class DeviceManager(object):
         BroadlinkConnection,
         HomeConnectConnection,
         SmartThingsConnection,
+        YeelightConnection,
     ]
 
     def __init__(self) -> None:

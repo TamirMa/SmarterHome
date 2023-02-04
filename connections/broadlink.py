@@ -20,13 +20,13 @@ class BroadlinkConnection(Connection):
         
         commands_json_path = self._connection_params.get("commands_json_path")
         self._devices_json = json.loads(open(commands_json_path, "r").read())
-
         self._device = broadlink.hello(self._connection_params.get("broadlink_ip_addr"))
+        self._device.auth()
+        
 
     def send_command_to_device(self, device_id, command: BroadlinkFanDevice.COMMANDS):
         commands = self._devices_json.get(device_id, {})
         packet = commands.get(command)
-        self._device.auth()
         self._device.send_data(base64.b64decode(packet.encode()))
 
 

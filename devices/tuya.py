@@ -17,3 +17,16 @@ class TuyaSwitchDevice(TuyaBaseDevice, SwitchInterface):
     def is_on(self):
         return self._d.status()['dps'][str(self._sub_device_id)] == True
 
+class TuyaCurtainDevice(TuyaBaseDevice, SwitchInterface):
+    # We don't really need to use the sub_device_id because on all of our devices
+    # we only have 1 curtain per device, if in the future we want to have a seconday
+    # curtain, the dps value to update should be 4
+    def open(self):
+        self._d.set_value('1', 'open')
+
+    def close(self):
+        self._d.set_value('1', 'close')
+
+    def stop(self):
+        self._d.set_value('1', 'stop')
+

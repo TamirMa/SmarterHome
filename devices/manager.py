@@ -3,6 +3,7 @@ import json
 
 from connections.aeg import AEGConnection
 from connections.broadlink import BroadlinkConnection
+from connections.homeconnect import HomeConnectConnection
 from connections.shelly import ShellyConnection
 from connections.tuya import TuyaConnection
 
@@ -22,6 +23,7 @@ class DeviceManager(object):
         TuyaConnection,
         ShellyConnection,
         BroadlinkConnection,
+        HomeConnectConnection,
     ]
 
     def __init__(self) -> None:

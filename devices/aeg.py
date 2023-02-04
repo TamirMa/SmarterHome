@@ -1,6 +1,5 @@
 
 from enum import Enum
-from tkinter import COMMAND
 from devices.generic import GenericDevice
 
 

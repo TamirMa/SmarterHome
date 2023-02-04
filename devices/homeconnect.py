@@ -1,4 +1,4 @@
-
+import time
 from enum import Enum
 from devices.generic import GenericDevice
 from homeconnect.api import HomeConnectAppliance
@@ -25,6 +25,7 @@ class BoschDishwasher(GenericDevice):
 
     def start(self, program):
         self._dishwasher_on()
+        time.sleep(10) # Waiting for the dishwasher to be ready
         self._d.start_program(program)
         
     def _dishwasher_on(self):

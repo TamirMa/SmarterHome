@@ -1,15 +1,8 @@
+from devices.generic import GenericDevice
 
-from devices.generic import SwitchInterface, GenericDevice
-
-
-class SmartThingsBaseDevice(GenericDevice):
-    def __init__(self, *args, **kwargs):
-        super(SmartThingsBaseDevice, self).__init__(*args, **kwargs)
-        self._d = self._connection.initialize_device(self._device_id)
-
-class SamsungTVDevice(SmartThingsBaseDevice):
+class SamsungTVDevice(GenericDevice):
     def switch_on(self):
-        self._d.switch_on()
+        self._connection.send_command(self._device_id, "main", "switch", "on")
 
     def switch_off(self):
-        self._d.switch_off()
+        self._connection.send_command(self._device_id, "main", "switch", "off")

@@ -1,5 +1,5 @@
+import requests
 from devices.smartthings import SamsungTVDevice
-import SmartThings
 
 from connections.connection import Connection
 
@@ -17,13 +17,17 @@ class SmartThingsConnection(Connection):
         if not self._connection_params.get("token"):
             raise Exception("SmartThings token is missing")
         
-        pat = self._connection_params.get("token")
+        self._pat = self._connection_params.get("token")
 
-        self._st = SmartThings.Account(pat)
-        
-    def initialize_device(self, device_id):    
-        all_devices = self._st.devices()
-        for device in all_devices:
-            if device.device_id == device_id:
-                return device
-        raise Exception(f"Couldn't find the device_id '{device_id}' in this SmartThings account")
+    def send_command(self, device_id, component, capability, command):
+        res = requests.post(
+            f"https://api.smartthings.com/v1/devices/{device_id}/commands", json={
+                 "commands": [
+                     {
+                         "component": component,
+                         "capability": capability,
+                         "command": command,
+                     }
+                 ]
+             }, headers={"Authorization": "Bearer " + self._pat})
+        print (res.content)

@@ -5,7 +5,7 @@ from connections.aeg import AEGConnection
 from connections.broadlink import BroadlinkConnection
 from connections.homeconnect import HomeConnectConnection
 from connections.shelly import ShellyConnection
-# from connections.smartthings import SmartThingsConnection
+from connections.smartthings import SmartThingsConnection
 from connections.tuya import TuyaConnection
 
 CONNECTION_PARAMS_FILE = os.getenv('CONNECTION_PARAMS_FILE')
@@ -25,7 +25,7 @@ class DeviceManager(object):
         ShellyConnection,
         BroadlinkConnection,
         HomeConnectConnection,
-        # SmartThingsConnection,
+        SmartThingsConnection,
     ]
 
     def __init__(self) -> None:

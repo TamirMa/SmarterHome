@@ -2,6 +2,7 @@ from enum import Enum
 from devices.aeg import AEGOven
 from devices.generic import CurtainInterface, SwitchInterface
 from devices.homeconnect import BoschDishwasher
+from devices.smartthings import SamsungTVDevice
 from starlette_context import context
 from fastapi import APIRouter
 
@@ -15,6 +16,12 @@ class CurtainState(str, Enum):
     OPEN = "open"
     CLOSE = "close"
     STOP = "stop"
+
+class TVCommands(str, Enum):
+    ON = "On"
+    OFF = "Off"
+    # MUTE = "Mute"
+
 
 @control_router.get("/light/{device_id}/state")
 async def get_light_state(device_id):
@@ -61,3 +68,14 @@ async def turn_on_oven(device_id, program: BoschDishwasher.PROGRAMS):
     dishwasher : BoschDishwasher = context.devices.get_device_by_name(device_id)
     dishwasher.start(program)
     return True
+
+@control_router.post("/tv/{device_id}")
+async def change_light_state(device_id, tv_command: TVCommands):
+    tv : SamsungTVDevice = context.devices.get_device_by_name(device_id)
+    if tv_command == TVCommands.ON:
+        tv.switch_on()
+    elif tv_command == TVCommands.OFF:
+        tv.switch_off()
+    else:
+        raise Exception(f"Invalid command for tv {tv_command}")
+    

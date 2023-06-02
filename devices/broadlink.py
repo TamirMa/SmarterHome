@@ -1,10 +1,10 @@
 
 from enum import Enum
-from devices.generic import SwitchInterface, GenericDevice
+from devices.generic import LightInterface, GenericDevice
 import broadlink
 
 
-class BroadlinkFanDevice(GenericDevice, SwitchInterface):
+class BroadlinkFanDevice(GenericDevice, LightInterface):
 
     class COMMANDS(str, Enum):
         LIGHT = 'Light'

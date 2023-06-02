@@ -1,9 +1,9 @@
 
 from enum import Enum
-from devices.generic import GenericDevice
+from devices.generic import OvenInterface, GenericDevice
 
 
-class AEGOven(GenericDevice):
+class AEGOven(GenericDevice, OvenInterface):
 
     class PROGRAMS(str, Enum):
         TRUE_FAN_COOKING = 'True Fan Cooking'

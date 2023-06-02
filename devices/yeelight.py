@@ -1,9 +1,9 @@
 
-from devices.generic import SwitchInterface, GenericDevice
+from devices.generic import LightInterface, GenericDevice
 from yeelight import Bulb
 
     
-class YeelightSwitchDevice(GenericDevice, SwitchInterface):
+class YeelightSwitchDevice(GenericDevice, LightInterface):
     def __init__(self, *args, **kwargs):
         super(YeelightSwitchDevice, self).__init__(*args, **kwargs)
         self._d = Bulb(self._device_id)

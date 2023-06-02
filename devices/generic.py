@@ -4,8 +4,8 @@ class GenericDevice(object):
         self._device_id = device_id
         self._sub_device_id = sub_device_id
     
-class SwitchInterface(object):
 
+class SwitchInterface(object):
     def turn_on(self):
         raise NotImplementedError()
 
@@ -14,6 +14,12 @@ class SwitchInterface(object):
 
     def is_on(self):
         raise NotImplementedError()
+
+class LightInterface(SwitchInterface):
+    pass
+
+class SocketInterface(SwitchInterface):
+    pass
 
 class CurtainInterface(object):
     def open(self):
@@ -24,3 +30,9 @@ class CurtainInterface(object):
 
     def stop(self):
         raise NotImplementedError()
+
+class OvenInterface(object):
+    pass
+
+class DishwasherInterface(object):
+    pass

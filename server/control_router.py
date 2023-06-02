@@ -1,6 +1,6 @@
 from enum import Enum
 from devices.aeg import AEGOven
-from devices.generic import CurtainInterface, SwitchInterface
+from devices.generic import CurtainInterface, LightInterface, SwitchInterface
 from devices.homeconnect import BoschDishwasher
 from devices.smartthings import SamsungTVDevice
 from starlette_context import context
@@ -23,20 +23,47 @@ class TVCommands(str, Enum):
     # MUTE = "Mute"
 
 
+@control_router.get("/sockets")
+async def get_all_lights():
+    return context.devices.get_devices_by_type("socket")
 
-@control_router.get("/devices")
-async def get_all_devices():
-    return context.devices.get_devices_by_type()
+@control_router.get("/lights")
+async def get_all_lights():
+    return context.devices.get_devices_by_type("light")
+
+@control_router.get("/ovens")
+async def get_all_ovens():
+    return context.devices.get_devices_by_type("oven")
+
+@control_router.get("/dishwashers")
+async def get_all_ovens():
+    return context.devices.get_devices_by_type("dishwasher")
+
+@control_router.get("/airconditions")
+async def get_all_ovens():
+    return context.devices.get_devices_by_type("ac")
+
+@control_router.get("/curtains")
+async def get_all_ovens():
+    return context.devices.get_devices_by_type("curtain")
+
 
 @control_router.get("/light/{device_id}/state")
 async def get_light_state(device_id):
-    light : SwitchInterface = context.devices.get_device_by_name(device_id)
+    device = context.devices.get_device_by_name(device_id)
+    if device == None or not isinstance(device, LightInterface):
+        raise Exception(f"This is not a light device ({device_id})")
+    light : LightInterface = device
     return light.is_on()
 
 @control_router.post("/light/{device_id}")
 @control_router.get("/light/{device_id}")
 async def change_light_state(device_id, light_state: LightState):
-    light : SwitchInterface = context.devices.get_device_by_name(device_id)
+    device = context.devices.get_device_by_name(device_id)
+    if device == None or not isinstance(device, LightInterface):
+        raise Exception(f"This is not a light device ({device_id})")
+    light : LightInterface = device
+    
     if light_state == LightState.ON:
         light.turn_on()
     elif light_state == LightState.OFF:
@@ -46,7 +73,11 @@ async def change_light_state(device_id, light_state: LightState):
     
 @control_router.post("/curtain/{device_id}/state")
 async def change_light_state(device_id, curtain_state: CurtainState):
-    curtain : CurtainInterface = context.devices.get_device_by_name(device_id)
+    device = context.devices.get_device_by_name(device_id)
+    if device == None or not isinstance(device, LightInterface):
+        raise Exception(f"This is not a light device ({device_id})")
+    curtain : CurtainInterface = device
+
     if curtain_state == CurtainState.OPEN:
         curtain.open()
     elif curtain_state == CurtainState.CLOSE:

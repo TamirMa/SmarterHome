@@ -1,3 +1,8 @@
-from scheduler.main import scheduler_main
+from dotenv import load_dotenv
 
-scheduler_main()
+load_dotenv()  # take environment variables from .env.
+
+import scheduler.main
+
+# scheduler.main.test_scheduler()
+scheduler.main.scheduler_main()

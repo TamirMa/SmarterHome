@@ -1,6 +1,6 @@
 from enum import Enum
 from devices.aeg import AEGOven
-from devices.generic import CurtainInterface, LightInterface, SwitchInterface
+from devices.generic import CurtainInterface, LightInterface, SocketInterface, SwitchInterface
 from devices.homeconnect import BoschDishwasher
 from devices.smartthings import SamsungTVDevice
 from starlette_context import context
@@ -9,6 +9,10 @@ from fastapi import APIRouter
 control_router = APIRouter()
 
 class LightState(str, Enum):
+    ON = "on"
+    OFF = "off"
+
+class SocketState(str, Enum):
     ON = "on"
     OFF = "off"
     
@@ -57,9 +61,32 @@ async def change_light_state(device_id, light_state: LightState):
         light.turn_off()
     else:
         raise Exception(f"Invalid state for light {light_state}")
+
+@control_router.get("/socket/{device_id}/state")
+async def get_socket_state(device_id):
+    device = context.devices.get_device_by_name(device_id)
+    if device == None or not isinstance(device, SocketInterface):
+        raise Exception(f"This is not a socket device ({device_id})")
+    socket : SocketInterface = device
+    return socket.is_on()
+
+@control_router.post("/socket/{device_id}")
+async def change_socket_state(device_id, socket_state: SocketState):
+    device = context.devices.get_device_by_name(device_id)
+    if device == None or not isinstance(device, SocketInterface):
+        raise Exception(f"This is not a socket device ({device_id})")
+    socket : SocketInterface = device
     
+    if socket_state == SocketState.ON:
+        socket.turn_on()
+    elif socket_state == SocketState.OFF:
+        socket.turn_off()
+    else:
+        raise Exception(f"Invalid state for socket {socket_state}")
+     
+
 @control_router.post("/curtain/{device_id}/state")
-async def change_light_state(device_id, curtain_state: CurtainState):
+async def change_curtain_state(device_id, curtain_state: CurtainState):
     device = context.devices.get_device_by_name(device_id)
     if device == None or not isinstance(device, LightInterface):
         raise Exception(f"This is not a light device ({device_id})")

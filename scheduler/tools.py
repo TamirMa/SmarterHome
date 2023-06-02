@@ -1,7 +1,7 @@
 import os
 import requests
 
-from server.control_router import LightState
+from server.control_router import DeviceType, LightState
 from devices.aeg import AEGOven
 
 SERVER_IP = os.getenv("SERVER_IP")
@@ -33,7 +33,10 @@ def turn_off_oven():
         f"http://{SERVER_IP}:{SERVER_PORT}/devices/oven/AEGOven/off",
     )
 
-def get_all_devices():
+def get_all_devices(device_type:DeviceType):
     return requests.get(
-        f"http://{SERVER_IP}:{SERVER_PORT}/devices/devices",
+        f"http://{SERVER_IP}:{SERVER_PORT}/devices/all",
+        params={
+            "device_type" : device_type
+        }
     ).json()

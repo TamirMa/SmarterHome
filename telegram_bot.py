@@ -5,7 +5,7 @@ load_dotenv()  # take environment variables from .env.
 import re
 import os
 import datetime
-from server.control_router import LightState
+from server.control_router import DeviceType, LightState
 from scheduler import tools
 import logging
 from telegram import Update, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup
@@ -37,7 +37,7 @@ async def light(update: Update, context: CallbackContext):
     logger.info('light command received')
 
     # Create buttons to slect language:
-    devices = tools.get_all_devices()
+    devices = tools.get_all_devices(DeviceType.Lights)
 
     # Create initial message:
     message = "Please choose a light from the list:"
@@ -75,7 +75,7 @@ async def handle_device_command(update: Update, context: CallbackContext):
             
     
     elif context.user_data.get('waiting_for_light', False):
-        devices = tools.get_all_devices()
+        devices = tools.get_all_devices(DeviceType.Lights)
         if option in devices:
             keyboard = [
                 [

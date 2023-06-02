@@ -51,7 +51,7 @@ async def light(update: Update, context: CallbackContext):
         ]
     )
 
-    context.user_data['waiting_for_device'] = True
+    context.user_data['waiting_for_light'] = True
     
     await update.message.reply_text(message, reply_markup=reply_markup)
 
@@ -74,7 +74,7 @@ async def handle_device_command(update: Update, context: CallbackContext):
             await query.edit_message_text(text=f'Turned device {device} {option}')
             
     
-    elif context.user_data.get('waiting_for_device', False):
+    elif context.user_data.get('waiting_for_light', False):
         devices = tools.get_all_devices()
         if option in devices:
             keyboard = [
@@ -87,18 +87,21 @@ async def handle_device_command(update: Update, context: CallbackContext):
 
             context.user_data['device_in_context'] = option
             context.user_data['waiting_for_command'] = True
-            del context.user_data['waiting_for_device']
+            del context.user_data['waiting_for_light']
             await query.edit_message_text(text="What would like to to do?", reply_markup=reply_markup)
         else:
-            del context.user_data['waiting_for_device']
+            del context.user_data['waiting_for_light']
             await query.edit_message_text(f'Cannot find device')
 
 async def process_message(update: Update, context: CallbackContext):
     await go_away(update, context)
 
-    del context.user_data['device_in_context']
-    del context.user_data['waiting_for_command']
-    del context.user_data['waiting_for_device']
+    if context.user_data.get('device_in_context'):
+        del context.user_data['device_in_context']
+    if context.user_data.get('waiting_for_command'):
+        del context.user_data['waiting_for_command']
+    if context.user_data.get('waiting_for_light'):
+        del context.user_data['waiting_for_light']
     await update.message.reply_text(f'what?')
 
 def main():

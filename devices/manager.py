@@ -71,6 +71,10 @@ class DeviceManager(object):
             device_class = CurtainInterface
         elif device_type == "socket":
             device_class = SocketInterface
+        elif device_type == "all":
+            pass
+        else:
+            raise Exception(f"Unknow device type {device_type}")
 
         return [
             device_id

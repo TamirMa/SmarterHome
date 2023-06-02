@@ -22,31 +22,18 @@ class TVCommands(str, Enum):
     OFF = "Off"
     # MUTE = "Mute"
 
+class DeviceType(str, Enum):
+    ALL="all"
+    Sockets = "socket"
+    Lights = "light"
+    Ovens = "oven"
+    Dishwashers = "dishwasher"
+    ACs = "ac"
+    Curtains = "curtain"
 
-@control_router.get("/sockets")
-async def get_all_lights():
-    return context.devices.get_devices_by_type("socket")
-
-@control_router.get("/lights")
-async def get_all_lights():
-    return context.devices.get_devices_by_type("light")
-
-@control_router.get("/ovens")
-async def get_all_ovens():
-    return context.devices.get_devices_by_type("oven")
-
-@control_router.get("/dishwashers")
-async def get_all_ovens():
-    return context.devices.get_devices_by_type("dishwasher")
-
-@control_router.get("/airconditions")
-async def get_all_ovens():
-    return context.devices.get_devices_by_type("ac")
-
-@control_router.get("/curtains")
-async def get_all_ovens():
-    return context.devices.get_devices_by_type("curtain")
-
+@control_router.get("/all")
+async def get_all_devices(device_type:DeviceType):
+    return context.devices.get_devices_by_type(device_type=device_type)
 
 @control_router.get("/light/{device_id}/state")
 async def get_light_state(device_id):

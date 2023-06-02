@@ -56,3 +56,8 @@ class DeviceManager(object):
             raise Exception(f"Couldn't get the device {device_name}")
 
         return device
+
+    def get_devices_by_type(self, device_type=None):
+        print (f"Getting devices list ({device_type})")
+        return list(self._devices.keys())
+        

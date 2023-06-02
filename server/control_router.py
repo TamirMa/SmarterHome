@@ -23,6 +23,11 @@ class TVCommands(str, Enum):
     # MUTE = "Mute"
 
 
+
+@control_router.get("/devices")
+async def get_all_devices():
+    return context.devices.get_devices_by_type()
+
 @control_router.get("/light/{device_id}/state")
 async def get_light_state(device_id):
     light : SwitchInterface = context.devices.get_device_by_name(device_id)

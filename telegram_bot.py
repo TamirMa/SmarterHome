@@ -31,13 +31,14 @@ async def hello(update: Update, context: CallbackContext):
     
     await update.message.reply_text(f'Hello, {update.message.from_user.first_name}!')
 
-async def light(update: Update, context: CallbackContext):
+async def handle_device_init(update: Update, context: CallbackContext):
     await go_away(update, context)
 
-    logger.info('light command received')
+    device_type = update.message.text[1:]
+    logger.info(f'{device_type} command received')
 
     # Create buttons to slect language:
-    devices = tools.get_all_devices(DeviceType.Lights)
+    devices = tools.get_all_devices(device_type)
 
     # Create initial message:
     message = "Please choose a light from the list:"
@@ -51,7 +52,7 @@ async def light(update: Update, context: CallbackContext):
         ]
     )
 
-    context.user_data['waiting_for_light'] = True
+    context.user_data['waiting_for_device'] = device_type
     
     await update.message.reply_text(message, reply_markup=reply_markup)
 
@@ -62,20 +63,23 @@ async def handle_device_command(update: Update, context: CallbackContext):
 
     await query.message.edit_reply_markup(reply_markup=None)  # Remove the inline keyboard
 
-    if context.user_data.get('waiting_for_command', False):
-        
+    if context.user_data.get('waiting_for_command'):
+        device_type = context.user_data.get('waiting_for_command')
         device = context.user_data['device_in_context']
-        if option in ["on", "off"]:
+        if device_type == DeviceType.Lights:
             tools.change_light_state(device, option)
+            await query.edit_message_text(text=f'Turned light {device} {option}')
             
-            del context.user_data['device_in_context']
-            del context.user_data['waiting_for_command']
+        elif device_type == DeviceType.Sockets:
+            tools.change_socket_state(device, option)
+            await query.edit_message_text(text=f'Turned socket {device} {option}')
+            
+        del context.user_data['device_in_context']
+        del context.user_data['waiting_for_command']
 
-            await query.edit_message_text(text=f'Turned device {device} {option}')
-            
-    
-    elif context.user_data.get('waiting_for_light', False):
-        devices = tools.get_all_devices(DeviceType.Lights)
+    elif context.user_data.get('waiting_for_device'):
+        device_type = context.user_data.get('waiting_for_device')
+        devices = tools.get_all_devices(device_type)
         if option in devices:
             keyboard = [
                 [
@@ -86,11 +90,11 @@ async def handle_device_command(update: Update, context: CallbackContext):
             reply_markup = InlineKeyboardMarkup(keyboard)
 
             context.user_data['device_in_context'] = option
-            context.user_data['waiting_for_command'] = True
-            del context.user_data['waiting_for_light']
+            context.user_data['waiting_for_command'] = device_type
+            del context.user_data['waiting_for_device']
             await query.edit_message_text(text="What would like to to do?", reply_markup=reply_markup)
         else:
-            del context.user_data['waiting_for_light']
+            del context.user_data['waiting_for_device']
             await query.edit_message_text(f'Cannot find device')
 
 async def process_message(update: Update, context: CallbackContext):
@@ -100,15 +104,16 @@ async def process_message(update: Update, context: CallbackContext):
         del context.user_data['device_in_context']
     if context.user_data.get('waiting_for_command'):
         del context.user_data['waiting_for_command']
-    if context.user_data.get('waiting_for_light'):
-        del context.user_data['waiting_for_light']
+    if context.user_data.get('waiting_for_device'):
+        del context.user_data['waiting_for_device']
     await update.message.reply_text(f'what?')
 
 def main():
     application = Application.builder().token(TOKEN).build()
     
     application.add_handler(CommandHandler('hello', hello))
-    application.add_handler(CommandHandler('light', light))
+    application.add_handler(CommandHandler(DeviceType.Lights, handle_device_init))
+    application.add_handler(CommandHandler(DeviceType.Sockets, handle_device_init))
     application.add_handler(CallbackQueryHandler(handle_device_command))
     application.add_handler(MessageHandler(filters.TEXT, process_message))
 

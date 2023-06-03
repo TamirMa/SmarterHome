@@ -7,7 +7,7 @@ from homeconnect.api import HomeConnectAppliance
 class BoschDishwasher(GenericDevice):
 
     class PROGRAMS(str, Enum):
-        AUTH = "Dishcare.Dishwasher.Program.Auto2"
+        AUTO = "Dishcare.Dishwasher.Program.Auto2"
         ECO_50 = "Dishcare.Dishwasher.Program.Eco50"
         PRE_RINSE = "Dishcare.Dishwasher.Program.PreRinse"
         QUICK_65 = "Dishcare.Dishwasher.Program.Quick65"

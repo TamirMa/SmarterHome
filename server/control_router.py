@@ -88,8 +88,8 @@ async def change_socket_state(device_id, socket_state: SocketState):
 @control_router.post("/curtain/{device_id}/state")
 async def change_curtain_state(device_id, curtain_state: CurtainState):
     device = context.devices.get_device_by_name(device_id)
-    if device == None or not isinstance(device, LightInterface):
-        raise Exception(f"This is not a light device ({device_id})")
+    if device == None or not isinstance(device, CurtainState):
+        raise Exception(f"This is not a curtain device ({device_id})")
     curtain : CurtainInterface = device
 
     if curtain_state == CurtainState.OPEN:
@@ -114,7 +114,7 @@ async def turn_off_oven(device_id):
     return True
 
 @control_router.post("/dishwasher/{device_id}/start")
-async def turn_on_oven(device_id, program: BoschDishwasher.PROGRAMS):
+async def turn_on_oven(device_id, program: BoschDishwasher.PROGRAMS = BoschDishwasher.PROGRAMS.AUTO):
     dishwasher : BoschDishwasher = context.devices.get_device_by_name(device_id)
     dishwasher.start(program)
     return True

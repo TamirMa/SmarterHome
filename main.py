@@ -17,13 +17,19 @@ logger = logging.getLogger(__name__)
 
 def start_telegram_bot():
     logger.info(f'Starting telegram bot')
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    asyncio.run_coroutine_threadsafe(telegram_bot.main(), loop=loop)
+    telegram_command = [
+        'python3',
+        'telegram_bot.py',
+    ]
+    subprocess.run(telegram_command, check=True)
 
 def start_python_scheduler():
     logger.info(f'Starting scheduler')
-    scheduler.main.scheduler_main()
+    scheduler_command = [
+        'python3',
+        'scheduler.py',
+    ]
+    subprocess.run(scheduler_command, check=True)
 
 def start_fast_api():
     logger.info(f'Starting fastapi server')

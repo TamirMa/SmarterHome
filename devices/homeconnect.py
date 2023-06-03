@@ -1,10 +1,10 @@
 import time
 from enum import Enum
-from devices.generic import GenericDevice
+from devices.generic import DishwasherInterface, GenericDevice
 from homeconnect.api import HomeConnectAppliance
 
 
-class BoschDishwasher(GenericDevice):
+class BoschDishwasher(GenericDevice, DishwasherInterface):
 
     class PROGRAMS(str, Enum):
         AUTO = "Dishcare.Dishwasher.Program.Auto2"

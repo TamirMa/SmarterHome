@@ -5,7 +5,7 @@ load_dotenv()  # take environment variables from .env.
 import re
 import os
 import datetime
-from server.control_router import DeviceType, LightState
+from server.control_router import CurtainState, DeviceType, LightState, SocketState
 from scheduler import tools
 import logging
 from telegram import Update, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup
@@ -73,6 +73,25 @@ async def handle_device_command(update: Update, context: CallbackContext):
         elif device_type == DeviceType.Sockets:
             tools.change_socket_state(device, option)
             await query.edit_message_text(text=f'Turned socket {device} {option}')
+
+        elif device_type == DeviceType.Curtains:
+            tools.change_curtain_state(device, option)
+            await query.edit_message_text(text=f'Curtain {device} - {option}')
+
+        elif device_type == DeviceType.Ovens:
+            if option == "start_1":
+                tools.turn_on_oven(device_id=device)
+            else:
+                tools.turn_off_oven(device_id=device)
+            await query.edit_message_text(text=f'Turned oven {device} {option}')
+
+        elif device_type == DeviceType.Dishwashers:
+            if option == "start":
+                tools.start_dishwasher(device)
+                await query.edit_message_text(text=f'Starting dishwasher {device}')
+            else:
+                await query.edit_message_text(text=f'Cancelled')
+
             
         del context.user_data['device_in_context']
         del context.user_data['waiting_for_command']
@@ -81,12 +100,44 @@ async def handle_device_command(update: Update, context: CallbackContext):
         device_type = context.user_data.get('waiting_for_device')
         devices = tools.get_all_devices(device_type)
         if option in devices:
-            keyboard = [
-                [
-                    InlineKeyboardButton("On", callback_data="on"),
-                    InlineKeyboardButton("Off", callback_data="off")
-                ],
-            ]
+            if device_type == DeviceType.Lights:
+                keyboard = [
+                    [
+                        InlineKeyboardButton("On", callback_data=LightState.ON),
+                        InlineKeyboardButton("Off", callback_data=LightState.OFF)
+                    ],
+                ]
+            elif device_type == DeviceType.Sockets:
+                keyboard = [
+                    [
+                        InlineKeyboardButton("On", callback_data=SocketState.ON),
+                        InlineKeyboardButton("Off", callback_data=SocketState.OFF)
+                    ],
+                ]
+            elif device_type == DeviceType.Ovens:
+                keyboard = [
+                    [
+                        InlineKeyboardButton("Start (Turbo 180°)", callback_data="start_1"),
+                        InlineKeyboardButton("Stop", callback_data="stop")
+                    ],
+                ]
+            elif device_type == DeviceType.Dishwashers:
+                keyboard = [
+                    [
+                        InlineKeyboardButton("Start", callback_data="start"),
+                        InlineKeyboardButton("Cancel", callback_data="cancel")
+                    ],
+                ]
+            elif device_type == DeviceType.Curtains:
+                keyboard = [
+                    [
+                        InlineKeyboardButton("Open", callback_data=CurtainState.OPEN),
+                        InlineKeyboardButton("Stop", callback_data=CurtainState.STOP),
+                        InlineKeyboardButton("Close", callback_data=CurtainState.CLOSE)
+                    ],
+                ]
+            else:
+                raise Exception(f"Unsupported device type {device_type}")
             reply_markup = InlineKeyboardMarkup(keyboard)
 
             context.user_data['device_in_context'] = option
@@ -114,6 +165,9 @@ def main():
     application.add_handler(CommandHandler('hello', hello))
     application.add_handler(CommandHandler(DeviceType.Lights, handle_device_init))
     application.add_handler(CommandHandler(DeviceType.Sockets, handle_device_init))
+    application.add_handler(CommandHandler(DeviceType.Ovens, handle_device_init))
+    application.add_handler(CommandHandler(DeviceType.Curtains, handle_device_init))
+    application.add_handler(CommandHandler(DeviceType.Dishwashers, handle_device_init))
     application.add_handler(CallbackQueryHandler(handle_device_command))
     application.add_handler(MessageHandler(filters.TEXT, process_message))
 

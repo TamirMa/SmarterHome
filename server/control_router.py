@@ -88,7 +88,7 @@ async def change_socket_state(device_id, socket_state: SocketState):
 @control_router.post("/curtain/{device_id}/state")
 async def change_curtain_state(device_id, curtain_state: CurtainState):
     device = context.devices.get_device_by_name(device_id)
-    if device == None or not isinstance(device, CurtainState):
+    if device == None or not isinstance(device, CurtainInterface):
         raise Exception(f"This is not a curtain device ({device_id})")
     curtain : CurtainInterface = device
 

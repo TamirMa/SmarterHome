@@ -51,6 +51,11 @@ async def handle_device_init(update: Update, context: CallbackContext):
                 InlineKeyboardButton(" ".join(re.findall(r'[A-Z][a-z]*', device)), callback_data=device)
             ]
             for device in devices
+        ] + 
+        [
+            [
+                InlineKeyboardButton("Ignore", callback_data="ignore")
+            ]
         ]
     )
 
@@ -64,8 +69,11 @@ async def handle_device_command(update: Update, context: CallbackContext):
     option = query.data
 
     await query.message.edit_reply_markup(reply_markup=None)  # Remove the inline keyboard
+
+    if option == "ignore":
+        await query.edit_message_text(text=f'Ignored')
     
-    if context.user_data.get('waiting_for_device') == 'all':
+    elif context.user_data.get('waiting_for_device') == 'all':
         del context.user_data['waiting_for_device']
         if option == "off":
             light_devices = tools.get_all_devices(DeviceType.Lights)
@@ -89,21 +97,24 @@ async def handle_device_command(update: Update, context: CallbackContext):
                 keyboard = [
                     [
                         InlineKeyboardButton("On", callback_data=LightState.ON),
-                        InlineKeyboardButton("Off", callback_data=LightState.OFF)
+                        InlineKeyboardButton("Off", callback_data=LightState.OFF),
+                        InlineKeyboardButton("Cancel", callback_data="cancel")
                     ],
                 ]
             elif device_type == DeviceType.Sockets:
                 keyboard = [
                     [
                         InlineKeyboardButton("On", callback_data=SocketState.ON),
-                        InlineKeyboardButton("Off", callback_data=SocketState.OFF)
+                        InlineKeyboardButton("Off", callback_data=SocketState.OFF),
+                        InlineKeyboardButton("Cancel", callback_data="cancel")
                     ],
                 ]
             elif device_type == DeviceType.Ovens:
                 keyboard = [
                     [
                         InlineKeyboardButton("Start (Turbo 180°)", callback_data="start_1"),
-                        InlineKeyboardButton("Stop", callback_data="stop")
+                        InlineKeyboardButton("Stop", callback_data="stop"),
+                        InlineKeyboardButton("Cancel", callback_data="cancel")
                     ],
                 ]
             elif device_type == DeviceType.Dishwashers:
@@ -118,7 +129,8 @@ async def handle_device_command(update: Update, context: CallbackContext):
                     [
                         InlineKeyboardButton("Open", callback_data=CurtainState.OPEN),
                         InlineKeyboardButton("Stop", callback_data=CurtainState.STOP),
-                        InlineKeyboardButton("Close", callback_data=CurtainState.CLOSE)
+                        InlineKeyboardButton("Close", callback_data=CurtainState.CLOSE),
+                        InlineKeyboardButton("Cancel", callback_data="cancel")
                     ],
                 ]
             else:
@@ -136,8 +148,11 @@ async def handle_device_command(update: Update, context: CallbackContext):
         
         del context.user_data['device_in_context']
         del context.user_data['waiting_for_command']
+        
+        if option == "cancel":
+            await query.edit_message_text(text=f'Cancelled')
 
-        if device_type == DeviceType.Lights:
+        elif device_type == DeviceType.Lights:
             tools.change_light_state(device, option)
             await query.edit_message_text(text=f'Turned light {device} {option}')
             
@@ -152,25 +167,27 @@ async def handle_device_command(update: Update, context: CallbackContext):
         elif device_type == DeviceType.Ovens:
             if option == "start_1":
                 tools.turn_on_oven(device_id=device)
-            else:
+            elif option == "stop":
                 tools.turn_off_oven(device_id=device)
+            else:
+                raise Exception(f"Unknown command for oven - {option}")
             await query.edit_message_text(text=f'Turned oven {device} {option}')
 
         elif device_type == DeviceType.Dishwashers:
             if option == "start":
                 tools.start_dishwasher(device)
                 await query.edit_message_text(text=f'Starting dishwasher {device}')
-            else:
-                await query.edit_message_text(text=f'Cancelled')
+
+        else:
+            await query.edit_message_text(text=f'Error')
+                
 
             
 async def handle_all_command(update: Update, context: CallbackContext):
     await go_away(update, context)
 
-    device_type = update.message.text[1:]
     logger.info(f'all command received')
 
-    
     # Create initial message:
     message = "Please choose a light from the list:"
 

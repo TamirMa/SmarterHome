@@ -159,7 +159,7 @@ async def process_message(update: Update, context: CallbackContext):
         del context.user_data['waiting_for_device']
     await update.message.reply_text(f'what?')
 
-def main():
+async def main():
     application = Application.builder().token(TOKEN).build()
     
     application.add_handler(CommandHandler('hello', hello))
@@ -171,7 +171,7 @@ def main():
     application.add_handler(CallbackQueryHandler(handle_device_command))
     application.add_handler(MessageHandler(filters.TEXT, process_message))
 
-    application.run_polling()
+    await application.run_polling()
 
 if __name__ == '__main__':
     main()

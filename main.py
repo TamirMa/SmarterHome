@@ -1,0 +1,50 @@
+from dotenv import load_dotenv
+
+load_dotenv()  # take environment variables from .env.
+
+import os
+import logging
+import threading
+import subprocess
+import asyncio
+
+import scheduler.main
+import telegram_bot
+
+SERVER_PORT = os.getenv("SERVER_PORT")
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+
+def start_telegram_bot():
+    logger.info(f'Starting telegram bot')
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    asyncio.run_coroutine_threadsafe(telegram_bot.main(), loop=loop)
+
+def start_python_scheduler():
+    logger.info(f'Starting scheduler')
+    scheduler.main.scheduler_main()
+
+def start_fast_api():
+    logger.info(f'Starting fastapi server')
+    uvicorn_command = [
+        'uvicorn',
+        'server.main:app',
+        '--port',
+        SERVER_PORT,
+        '--host',
+        '0.0.0.0',
+    ]
+    subprocess.run(uvicorn_command, check=True)
+
+telegram_bot_thread = threading.Thread(target=start_telegram_bot)
+python_scheduler_thread = threading.Thread(target=start_python_scheduler)
+fast_api_thread = threading.Thread(target=start_fast_api)
+
+telegram_bot_thread.start()
+python_scheduler_thread.start()
+fast_api_thread.start()
+
+telegram_bot_thread.join()
+python_scheduler_thread.join()
+fast_api_thread.join()

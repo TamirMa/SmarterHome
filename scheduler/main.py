@@ -86,29 +86,30 @@ def shabat_before_exit():
     tools.change_light_state("DiningTableLight", LightState.OFF)
 
 
-def scheduler_main():
+def scheduler_main():   
+    return
     
     # schedule.every(30).seconds.do(job)
     # schedule.every(30).minutes.do(job)
     # schedule.every().hour.do(job)
-    # schedule.every().day.at("30:30").do(job)
+    # schedule.every().day.at("13:30").do(job)
     # schedule.every(5).to(30).minutes.do(job)
     # schedule.every().monday.do(job)
-    # schedule.every().wednesday.at("33:35").do(job)
+    # schedule.every().wednesday.at("13:35").do(job)
     # schedule.every().minute.at(":37").do(job)
     
-    schedule.every().friday.at('39:00').do(shabat_entrance)
-    schedule.every().friday.at('39:30').do(shabat_dinner)
-    schedule.every().friday.at('38:40').do(tools.turn_on_oven)
+    schedule.every().friday.at('19:00').do(shabat_entrance)
+    schedule.every().friday.at('19:30').do(shabat_dinner)
+    schedule.every().friday.at('18:40').do(tools.turn_on_oven)
     schedule.every().friday.at('22:30').do(tools.turn_off_oven)
     schedule.every().friday.at('23:30').do(prepare_to_sleep)
-    schedule.every().saturday.at('03:30').do(shutdown_livingroom)
+    schedule.every().saturday.at('01:30').do(shutdown_livingroom)
     schedule.every().saturday.at('08:30').do(shabat_morning)
-    schedule.every().saturday.at('33:00').do(prepare_to_lunch)
-    schedule.every().saturday.at('33:00').do(tools.turn_on_oven)
-    schedule.every().saturday.at('34:00').do(shabat_lunch)
-    schedule.every().saturday.at('35:30').do(tools.turn_off_oven)
-    schedule.every().saturday.at('37:30').do(shabat_before_exit)
+    schedule.every().saturday.at('13:00').do(prepare_to_lunch)
+    schedule.every().saturday.at('13:00').do(tools.turn_on_oven)
+    schedule.every().saturday.at('14:00').do(shabat_lunch)
+    schedule.every().saturday.at('15:30').do(tools.turn_off_oven)
+    schedule.every().saturday.at('17:30').do(shabat_before_exit)
 
     print(schedule.get_jobs())
     while True:

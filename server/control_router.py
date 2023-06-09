@@ -1,6 +1,6 @@
 from enum import Enum
 from devices.aeg import AEGOven
-from devices.generic import CurtainInterface, LightInterface, SocketInterface, SwitchInterface
+from devices.generic import CurtainInterface, FanInterface, LightInterface, SocketInterface, SwitchInterface
 from devices.homeconnect import BoschDishwasher
 from devices.smartthings import SamsungTVDevice
 from starlette_context import context
@@ -19,6 +19,11 @@ class SocketState(str, Enum):
 class CurtainState(str, Enum):
     OPEN = "open"
     CLOSE = "close"
+    STOP = "stop"
+
+class FanState(str, Enum):
+    FAN2 = "fan2"
+    FAN3 = "fan3"
     STOP = "stop"
 
 class TVCommands(str, Enum):
@@ -83,6 +88,22 @@ async def change_socket_state(device_id, socket_state: SocketState):
         socket.turn_off()
     else:
         raise Exception(f"Invalid state for socket {socket_state}")
+     
+@control_router.post("/fan/{device_id}")
+async def change_socket_state(device_id, fan_state: FanState):
+    device = context.devices.get_device_by_name(device_id)
+    if device == None or not isinstance(device, FanInterface):
+        raise Exception(f"This is not a fan device ({device_id})")
+    fan : FanInterface = device
+    
+    if fan_state == FanState.FAN2:
+        fan.start_fan2()
+    elif fan_state == FanState.FAN3:
+        fan.start_fan3()
+    elif fan_state == FanState.STOP:
+        fan.stop_fan()
+    else:
+        raise Exception(f"Invalid state for fan {fan_state}")
      
 
 @control_router.post("/curtain/{device_id}/state")

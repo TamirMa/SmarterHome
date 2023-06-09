@@ -1,15 +1,16 @@
 
 from enum import Enum
-from devices.generic import LightInterface, GenericDevice
+from devices.generic import FanInterface, LightInterface, GenericDevice
 import broadlink
 
 
-class BroadlinkFanDevice(GenericDevice, LightInterface):
+class BroadlinkFanDevice(GenericDevice, LightInterface, FanInterface):
 
     class COMMANDS(str, Enum):
         LIGHT = 'Light'
-        FAN1 = 'Fan1'
-        FAN_OFF = 'FanOff'
+        FAN2 = 'Fan2'
+        FAN3 = 'Fan3'
+        STOP_FAN = 'FanOff'
 
     def turn_on(self):
         self._connection.send_command_to_device(self._device_id, BroadlinkFanDevice.COMMANDS.LIGHT)
@@ -19,4 +20,14 @@ class BroadlinkFanDevice(GenericDevice, LightInterface):
 
     def is_on(self):
         return None
+
+    def start_fan2(self):
+        self._connection.send_command_to_device(self._device_id, BroadlinkFanDevice.COMMANDS.FAN2)
+
+    def start_fan3(self):
+        self._connection.send_command_to_device(self._device_id, BroadlinkFanDevice.COMMANDS.FAN3)
+
+    def stop_fan(self):
+        self._connection.send_command_to_device(self._device_id, BroadlinkFanDevice.COMMANDS.STOP_FAN)
+
 

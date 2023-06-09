@@ -21,6 +21,17 @@ class LightInterface(SwitchInterface):
 class SocketInterface(SwitchInterface):
     pass
 
+class FanInterface(object):
+    def start_fan2(self):
+        raise NotImplementedError()
+
+    def start_fan3(self):
+        raise NotImplementedError()
+
+    def stop_fan(self):
+        raise NotImplementedError()
+
+
 class CurtainInterface(object):
     def open(self):
         raise NotImplementedError()

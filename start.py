@@ -17,14 +17,6 @@ def start_telegram_bot():
     ]
     subprocess.run(telegram_command, check=True)
 
-def start_python_scheduler():
-    logger.info(f'Starting scheduler')
-    scheduler_command = [
-        'python3',
-        'scheduler.py',
-    ]
-    subprocess.run(scheduler_command, check=True)
-
 def start_fast_api():
     logger.info(f'Starting fastapi server')
     uvicorn_command = [
@@ -38,13 +30,10 @@ def start_fast_api():
     subprocess.run(uvicorn_command, check=True)
 
 telegram_bot_thread = threading.Thread(target=start_telegram_bot)
-python_scheduler_thread = threading.Thread(target=start_python_scheduler)
 fast_api_thread = threading.Thread(target=start_fast_api)
 
 telegram_bot_thread.start()
-python_scheduler_thread.start()
 fast_api_thread.start()
 
 telegram_bot_thread.join()
-python_scheduler_thread.join()
 fast_api_thread.join()

@@ -4,6 +4,7 @@ import pyelectroluxconnect
 
 from connections.connection import Connection
 
+
 class AEGConnection(Connection):
 
     NAME = "AEG"
@@ -11,6 +12,8 @@ class AEGConnection(Connection):
     DEVICES = {
         "Oven": AEGOven,
     }
+    
+    TOKEN_REFRESH_MINUTES = 60
 
     def __init__(self, *args, **kwargs):
         super(AEGConnection, self).__init__(*args, **kwargs)
@@ -21,9 +24,9 @@ class AEGConnection(Connection):
         self._ses = pyelectroluxconnect.Session(
             self._connection_params.get("username"), 
             self._connection_params.get("password"), 
-            region="emea", 
+            region="apac", 
             tokenFileName = ".electrolux-token", 
-            country = "FR", 
+            country = "IL", 
             language = None, 
             deviceId = "CustomDeviceId", 
             verifySsl = True, 
@@ -31,8 +34,14 @@ class AEGConnection(Connection):
             customApiKey=None, 
             customApiBrand=None
         )
-        self._last_login = None
-        self._ses.login()
+        self._tokenTimestamp = None
+
+    def _validateToken(self):
+        if self._tokenTimestamp is None or ((self._tokenTimestamp + self.TOKEN_REFRESH_MINUTES * 60) < time.time()):
+            print ("Getting AEG token")
+            self._ses._createToken()
+            self._ses.login()
+            self._tokenTimestamp = time.time()
 
     def check_login(self):
         if self._last_login == None or self._last_login + 6 * 60 * 60 < time.time():
@@ -40,21 +49,21 @@ class AEGConnection(Connection):
             self._last_login = time.time()
 
     def get_all_appliances(self):
-        self.check_login()
+        self._validateToken()
         appllist = self._ses.getAppliances()
         print(appllist)
         for appliance in appllist:  
             print(self._ses.getApplianceConnectionState(appliance))
 
     def get_profile_for_appliance(self, appliance):
-        self.check_login()
+        self._validateToken()
         print(self._ses.getApplianceProfile(appliance))
 
     def send_command(self, appliance, hacl, value, destination):
-        self.check_login()
+        self._validateToken()
         print (f"Sending command {destination+':'+hacl} with value {value} to {appliance}")
         self._ses.setHacl(appliance, hacl, value, destination)
 
     def read_state(self, appliance):
-        self.check_login()
+        self._validateToken()
         return self._ses.getApplianceState(appliance, paramName = None, rawOutput = False)

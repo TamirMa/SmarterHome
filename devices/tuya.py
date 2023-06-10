@@ -1,5 +1,5 @@
 
-from devices.generic import SwitchInterface, GenericDevice
+from devices.generic import CurtainInterface, LightInterface, SocketInterface, GenericDevice
 
 
 class TuyaBaseDevice(GenericDevice):
@@ -7,7 +7,7 @@ class TuyaBaseDevice(GenericDevice):
         super(TuyaBaseDevice, self).__init__(*args, **kwargs)
         self._d = self._connection.initialize_device(self._device_id)
 
-class TuyaSwitchDevice(TuyaBaseDevice, SwitchInterface):
+class TuyaSwitchDevice(TuyaBaseDevice):
     def turn_on(self):
         self._d.set_status(True, self._sub_device_id)
 
@@ -17,7 +17,13 @@ class TuyaSwitchDevice(TuyaBaseDevice, SwitchInterface):
     def is_on(self):
         return self._d.status()['dps'][str(self._sub_device_id)] == True
 
-class TuyaCurtainDevice(TuyaBaseDevice, SwitchInterface):
+class TuyaLightDevice(TuyaSwitchDevice, LightInterface):
+    pass
+
+class TuyaSocketDevice(TuyaSwitchDevice, SocketInterface):
+    pass
+
+class TuyaCurtainDevice(TuyaBaseDevice, CurtainInterface):
     # We don't really need to use the sub_device_id because on all of our devices
     # we only have 1 curtain per device, if in the future we want to have a seconday
     # curtain, the dps value to update should be 4

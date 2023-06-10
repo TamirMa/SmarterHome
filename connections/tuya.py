@@ -1,6 +1,6 @@
 import json
 from connections.connection import Connection
-from devices.tuya import TuyaSwitchDevice, TuyaCurtainDevice
+from devices.tuya import TuyaLightDevice, TuyaSocketDevice, TuyaSwitchDevice, TuyaCurtainDevice
 import tinytuya
 
 class TuyaConnection(Connection):
@@ -8,8 +8,8 @@ class TuyaConnection(Connection):
     NAME = "Tuya"
 
     DEVICES = {
-        "Light": TuyaSwitchDevice,
-        "Socket": TuyaSwitchDevice,
+        "Light": TuyaLightDevice,
+        "Socket": TuyaSocketDevice,
         "Curtain": TuyaCurtainDevice,
     }
 

@@ -1,5 +1,5 @@
 
-from devices.generic import SwitchInterface, GenericDevice
+from devices.generic import LightInterface, GenericDevice
 import ShellyPy
 
 
@@ -8,7 +8,7 @@ class ShellyBaseDevice(GenericDevice):
         super(ShellyBaseDevice, self).__init__(*args, **kwargs)
         self._d = ShellyPy.Shelly(self._device_id)
         
-class ShellySwitchDevice(ShellyBaseDevice, SwitchInterface):
+class ShellySwitchDevice(ShellyBaseDevice, LightInterface):
     def turn_on(self):
         self._d.relay(self._sub_device_id if self._sub_device_id != None else 0, turn=True)
 

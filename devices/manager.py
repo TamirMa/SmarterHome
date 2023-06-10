@@ -8,6 +8,7 @@ from connections.shelly import ShellyConnection
 from connections.smartthings import SmartThingsConnection
 from connections.tuya import TuyaConnection
 from connections.yeelight import YeelightConnection
+from devices.generic import CurtainInterface, DishwasherInterface, LightInterface, OvenInterface, SocketInterface
 
 CONNECTION_PARAMS_FILE = os.getenv('CONNECTION_PARAMS_FILE')
 DEVICES_FILE = os.getenv('DEVICES_FILE')
@@ -56,3 +57,28 @@ class DeviceManager(object):
             raise Exception(f"Couldn't get the device {device_name}")
 
         return device
+
+    def get_devices_by_type(self, device_type=None):
+        print (f"Getting devices list ({device_type})")
+        device_class = None
+        if device_type == "light":
+            device_class = LightInterface
+        elif device_type == "oven":
+            device_class = OvenInterface
+        elif device_type == "dishwasher":
+            device_class = DishwasherInterface
+        elif device_type == "curtain":
+            device_class = CurtainInterface
+        elif device_type == "socket":
+            device_class = SocketInterface
+        elif device_type == "all":
+            pass
+        else:
+            raise Exception(f"Unknow device type {device_type}")
+
+        return [
+            device_id
+            for device_id, device in self._devices.items()
+            if device_type == None or isinstance(device, device_class)
+        ]
+        

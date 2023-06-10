@@ -1,7 +1,7 @@
 import os
 import requests
 
-from server.control_router import CurtainState, DeviceType, LightState, SocketState
+from server.control_router import CurtainState, DeviceType, FanState, LightState, SocketState
 from devices.aeg import AEGOven
 
 SERVER_IP = os.getenv("SERVER_IP")
@@ -19,13 +19,19 @@ def change_socket_state(device_id, socket_state : SocketState):
         params={"socket_state": socket_state}
     )
 
+def change_fan_state(device_id, fan_state : FanState):
+    requests.post(
+        f"http://{SERVER_IP}:{SERVER_PORT}/devices/fan/{device_id}",
+        params={"fan_state": fan_state}
+    )
+
 def change_curtain_state(device_id, curtain_state : CurtainState):
     requests.post(
         f"http://{SERVER_IP}:{SERVER_PORT}/devices/curtain/{device_id}/state",
         params={"curtain_state": curtain_state}
     )
 
-def start_dishwasher(device_id):
+def start_dishwasher(device_id="Dishwasher"):
     requests.post(
         f"http://{SERVER_IP}:{SERVER_PORT}/devices/dishwasher/{device_id}/start"
     )

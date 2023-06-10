@@ -16,10 +16,6 @@ class Connection(object):
         if not device_id:
             raise Exception("Couldn't get the device id")
         Device = self.DEVICES.get(device_type)
-        try:
-            return Device(self, device_id, sub_device_id=device_definition.get("sub_device_id"))
-        except Exception as e:
-            print (f"Exception when creating a device: {Device.__name__}, {device_definition}")
-            traceback.print_exception(e)
-
+        return Device(self, device_id, sub_device_id=device_definition.get("sub_device_id"))
+        
         

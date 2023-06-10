@@ -1,3 +1,4 @@
+import json
 import os
 import requests
 
@@ -63,3 +64,26 @@ def get_all_devices(device_type:DeviceType):
             "device_type" : device_type
         }
     ).json()
+
+def generate_shabat_tasks():
+    return requests.get(
+        f"http://{SERVER_IP}:{SERVER_PORT}/shabat/generate_tasks"
+    ).json()
+
+def get_tasks():
+    return requests.get(
+        f"http://{SERVER_IP}:{SERVER_PORT}/shabat/schedule"
+    ).json()
+
+def set_tasks(tasks):
+    return requests.post(
+        f"http://{SERVER_IP}:{SERVER_PORT}/shabat/schedule",
+        data=json.dumps(tasks)
+    )
+
+# def get_tasks(device_type:DeviceType):
+#     return [
+#         Task(id=task["id"], name=task["name"], time=task["time"]) for task in requests.get(
+#             f"http://{SERVER_IP}:{SERVER_PORT}/shabat/schedule"
+#         ).json()
+#     ]

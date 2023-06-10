@@ -43,6 +43,11 @@ class AEGConnection(Connection):
             self._ses.login()
             self._tokenTimestamp = time.time()
 
+    def check_login(self):
+        if self._last_login == None or self._last_login + 6 * 60 * 60 < time.time():
+            self._ses.login()
+            self._last_login = time.time()
+
     def get_all_appliances(self):
         self._validateToken()
         appllist = self._ses.getAppliances()

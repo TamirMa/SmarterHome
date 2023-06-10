@@ -10,6 +10,8 @@ from connections.tuya import TuyaConnection
 from connections.yeelight import YeelightConnection
 from devices.generic import CurtainInterface, DishwasherInterface, LightInterface, OvenInterface, SocketInterface
 
+from tools.logger import logger
+
 CONNECTION_PARAMS_FILE = os.getenv('CONNECTION_PARAMS_FILE')
 DEVICES_FILE = os.getenv('DEVICES_FILE')
 
@@ -35,20 +37,37 @@ class DeviceManager(object):
         if not os.path.exists(CONNECTION_PARAMS_FILE):
             raise Exception(f"Couldn't open the ConnectionsParams file at '{CONNECTION_PARAMS_FILE}'")
 
+        self.reload_connections()
+        self.reload_devices()
+
+    def reload_connections(self):
         connection_params = json.loads(open(CONNECTION_PARAMS_FILE, "r").read())
-        self._connections = {
-            ConnectionClass.NAME: ConnectionClass(connection_params.get(ConnectionClass.NAME))
-            for ConnectionClass in self.CONNECTIONS
-        }
+        self._connections = { }
+        for ConnectionClass in self.CONNECTIONS:
+            try:
+                connection = ConnectionClass(connection_params.get(ConnectionClass.NAME))
+                self._connections[ConnectionClass.NAME] = connection
+            except:
+                logger.exception(f"Couldn't initialize connection {ConnectionClass}, skipping")
+
+    def reload_devices(self):
 
         if not os.path.exists(DEVICES_FILE):
             raise Exception(f"Couldn't open the Devices file at '{DEVICES_FILE}'")
 
         all_devices = json.loads(open(DEVICES_FILE, "r").read())
-        self._devices = {
-            device_definition["name"] : self._connections.get(device_definition["connection"]).create_device(device_definition) if self._connections.get(device_definition["connection"]) else None
-            for device_definition in all_devices
-        }
+        self._devices = { }
+
+        for device_definition in all_devices:
+            connection = self._connections.get(device_definition["connection"])
+            if not connection:
+                logger.error(f"Couldn't find a connection for device {device_definition['name']}")
+                continue
+            try:
+                self._devices[device_definition["name"]] = connection.create_device(device_definition)
+            except Exception as e:
+                logger.exception(f"Exception when creating a device: {device_definition['name']}, {device_definition}")
+
         
     def get_device_by_name(self, device_name):
         print (f"Getting device {device_name}")

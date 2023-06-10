@@ -6,6 +6,7 @@ LOCATION = 293397
 
 
 def get_shabat_times_online(location):
+    # res = requests.get(f"https://www.hebcal.com/shabbat?cfg=json&geonameid=293397&M=on&gy=2023&gm=5&gd=21") # Example for 2 shabat-s in a row
     res = requests.get(f"https://www.hebcal.com/shabbat?cfg=json&geonameid={location}&M=on")
     return res.json()
     '''
@@ -74,17 +75,19 @@ def get_shabat_times_online(location):
     '''
 
 def get_shabat_times():
-    times = {
-        "start": None,
-        "end": None,
-    }
+    times = []
+    
     res = get_shabat_times_online(location=LOCATION)
     for item in res["items"]:
         if item["category"] == "candles":
-            if times["start"] == None:
-                times["start"] = datetime.datetime.strptime(item["date"], "%Y-%m-%dT%H:%M:%S%z")
+            if len(times) > 0:
+                times[-1]["end"] = datetime.datetime.strptime(item["date"], "%Y-%m-%dT%H:%M:%S%z").replace(tzinfo=None)
+            times.append({
+                "start": datetime.datetime.strptime(item["date"], "%Y-%m-%dT%H:%M:%S%z").replace(tzinfo=None),
+                "end": None,
+            })
         if item["category"] == "havdalah":
-            times["end"] = datetime.datetime.strptime(item["date"], "%Y-%m-%dT%H:%M:%S%z")
+            times[-1]["end"] = datetime.datetime.strptime(item["date"], "%Y-%m-%dT%H:%M:%S%z").replace(tzinfo=None)
             break
     return times
 

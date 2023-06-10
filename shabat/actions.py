@@ -13,7 +13,7 @@ def shabat_entrance():
     actions.change_light_state("EntranceLight", LightState.ON)
     actions.change_light_state("KitchenMainLight", LightState.ON)
     actions.change_light_state("KitchenSecondaryLight", LightState.ON)
-    # tools.change_light_state("KitchenLED", LightState.ON)
+    actions.change_light_state("KitchenLED", LightState.ON)
     actions.change_light_state("LivingRoomLight", LightState.ON)
     actions.change_light_state("GuestRestroomsToiletLight", LightState.ON)
     actions.change_light_state("GuestRestroomsSinkLight", LightState.ON)
@@ -21,13 +21,24 @@ def shabat_entrance():
     # tools.change_light_state("MasterBedroomBathroomLight", LightState.ON)
     
     actions.change_socket_state("KitchenSocket", SocketState.ON)
-    
+
+def prepare_to_dinner():
+    """
+    Tunr On - Oven
+    """
+    actions.turn_on_oven()    
 
 def shabat_dinner():
     """
     Turn On - DiningTable
     """
     actions.change_light_state("DiningTableLight", LightState.ON)
+
+def post_dinner():
+    """
+    Tunr Off - Oven
+    """
+    actions.turn_off_oven()
 
 def prepare_to_sleep():
     """
@@ -47,7 +58,7 @@ def shutdown_livingroom():
     actions.change_light_state("EntranceLight", LightState.OFF)
     actions.change_light_state("KitchenMainLight", LightState.OFF)
     actions.change_light_state("KitchenSecondaryLight", LightState.OFF)
-    # tools.change_light_state("KitchenLED", LightState.OFF)
+    actions.change_light_state("KitchenLED", LightState.OFF)
     actions.change_light_state("LivingRoomLight", LightState.OFF)
     actions.change_light_state("GuestRestroomsToiletLight", LightState.OFF)
     actions.change_light_state("GuestRestroomsSinkLight", LightState.OFF)
@@ -61,8 +72,11 @@ def shabat_morning():
     """
     actions.change_light_state("GuestRestroomsToiletLight", LightState.ON)
     
-def prepare_to_lunch():
+def prepare_to_lunch_plata():
     actions.change_socket_state("KitchenSocket", SocketState.ON)
+
+def prepare_to_lunch_oven():
+    actions.turn_on_oven()
 
 def shabat_lunch():
     """
@@ -71,7 +85,10 @@ def shabat_lunch():
     actions.change_light_state("DiningTableLight", LightState.ON)
     actions.change_light_state("KitchenMainLight", LightState.ON)
     actions.change_light_state("KitchenSecondaryLight", LightState.ON)
-    # tools.change_light_state("KitchenLED", LightState.ON)
+    actions.change_light_state("KitchenLED", LightState.ON)
+
+def post_lunch():
+    actions.turn_off_oven()
 
 def shabat_before_exit():
     """

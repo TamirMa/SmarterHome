@@ -112,7 +112,7 @@ def test_scheduler():
     time.sleep(3)
     shabat_morning()
     time.sleep(3)
-    prepare_to_lunch()
+    prepare_to_lunch_plata()
     time.sleep(3)
     shabat_lunch()
     time.sleep(3)

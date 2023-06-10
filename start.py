@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 load_dotenv()  # take environment variables from .env.
 
 import os
-import logging
+from tools.logger import logger
 import threading
 import subprocess
 import asyncio
@@ -12,8 +12,6 @@ import scheduler.main
 import telegram_bot
 
 SERVER_PORT = os.getenv("SERVER_PORT")
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
 
 def start_telegram_bot():
     logger.info(f'Starting telegram bot')
@@ -35,7 +33,7 @@ def start_fast_api():
     logger.info(f'Starting fastapi server')
     uvicorn_command = [
         'uvicorn',
-        'server.main:app',
+        'api_server:app',
         '--port',
         SERVER_PORT,
         '--host',

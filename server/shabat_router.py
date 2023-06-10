@@ -1,5 +1,6 @@
 import datetime
 
+import shabat.times
 import shabat.actions
 from tools.logger import logger
 
@@ -34,6 +35,23 @@ class Task(BaseModel):
 
 @shabat_router.get("/schedule")
 async def task_status():
+    """
+    
+    schedule.every().friday.at('19:00').do(shabat_entrance)
+    schedule.every().friday.at('19:30').do(shabat_dinner)
+    schedule.every().friday.at('18:40').do(actions.turn_on_oven)
+    schedule.every().friday.at('22:30').do(actions.turn_off_oven)
+    schedule.every().friday.at('23:30').do(prepare_to_sleep)
+    schedule.every().saturday.at('01:30').do(shutdown_livingroom)
+    schedule.every().saturday.at('08:30').do(shabat_morning)
+    schedule.every().saturday.at('13:00').do(prepare_to_lunch)
+    schedule.every().saturday.at('13:00').do(actions.turn_on_oven)
+    schedule.every().saturday.at('14:00').do(shabat_lunch)
+    schedule.every().saturday.at('15:30').do(actions.turn_off_oven)
+    schedule.every().saturday.at('17:30').do(shabat_before_exit)
+
+    """
+    
     return [
         job.name
         for job in scheduler.get_jobs()
@@ -63,23 +81,4 @@ def execute_task(task_id):
 
 @shabat_router.get("/times")
 async def get_shabat_times():
-    """
-    
-    schedule.every().friday.at('19:00').do(shabat_entrance)
-    schedule.every().friday.at('19:30').do(shabat_dinner)
-    schedule.every().friday.at('18:40').do(actions.turn_on_oven)
-    schedule.every().friday.at('22:30').do(actions.turn_off_oven)
-    schedule.every().friday.at('23:30').do(prepare_to_sleep)
-    schedule.every().saturday.at('01:30').do(shutdown_livingroom)
-    schedule.every().saturday.at('08:30').do(shabat_morning)
-    schedule.every().saturday.at('13:00').do(prepare_to_lunch)
-    schedule.every().saturday.at('13:00').do(actions.turn_on_oven)
-    schedule.every().saturday.at('14:00').do(shabat_lunch)
-    schedule.every().saturday.at('15:30').do(actions.turn_off_oven)
-    schedule.every().saturday.at('17:30').do(shabat_before_exit)
-
-    """
-    return {
-        "start": None,
-        "end": None
-    }
+    return shabat.times.get_shabat_times()

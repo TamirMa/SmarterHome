@@ -96,7 +96,7 @@ async def handle_device_command(update: Update, context: CallbackContext):
 
             acked_tasks = actions.get_tasks()
             message = "Done. This is the list of tasks for shabat:\n"
-            message += '\n'.join([f"{task['name']} - {task['time'].replace('T', '')[:-3]}" for task in acked_tasks])
+            message += '\n'.join([task["description"] for task in acked_tasks])
 
             await query.edit_message_text(text=message)
         else:
@@ -227,7 +227,7 @@ async def handle_shabat_command(update: Update, context: CallbackContext):
 
     tasks = actions.generate_shabat_tasks()
     message = "This is the list of tasks for shabat:\n"
-    message += '\n'.join([f"{task['name']} - {task['time'].replace('T', '')[:-3]}" for task in tasks])
+    message += '\n'.join([task["description"] for task in tasks])
 
     reply_markup = InlineKeyboardMarkup(
         [

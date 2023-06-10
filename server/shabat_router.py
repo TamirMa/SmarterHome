@@ -1,11 +1,12 @@
 import datetime
+from typing import Optional
 
 import shabat.times
 import shabat.actions
 from tools.logger import logger
 
 from fastapi import APIRouter
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, validator
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 scheduler = AsyncIOScheduler()
@@ -15,18 +16,18 @@ shabat_router = APIRouter()
 
 
 shabat_actions = {
-    "shabat_entrance":          (shabat.actions.shabat_entrance,        None,                   datetime.timedelta(minutes=-5),             None,                   None,    ),
-    "prepare_to_dinner":        (shabat.actions.prepare_to_dinner,      None,                   datetime.timedelta(minutes=30),             None,                   None,    ),
-    "shabat_dinner":            (shabat.actions.shabat_dinner,          None,                   datetime.timedelta(minutes=45),             None,                   None,    ),
-    "post_dinner":              (shabat.actions.post_dinner,            None,                   datetime.timedelta(hours=3, minutes=45),    None,                   None,    ),
-    "prepare_to_sleep":         (shabat.actions.prepare_to_sleep,       datetime.time(23,30),   None,                                       None,                   None,    ),
-    "shutdown_livingroom":      (shabat.actions.shutdown_livingroom,    None,                   None,                                       datetime.time(1,30),    None,    ),
-    "shabat_morning":           (shabat.actions.shabat_morning,         None,                   None,                                       datetime.time(8,0),     None,    ),
-    "prepare_to_lunch_plata":   (shabat.actions.prepare_to_lunch_plata, None,                   None,                                       datetime.time(11,30),   None,    ),
-    "prepare_to_lunch_oven":    (shabat.actions.prepare_to_lunch_oven,  None,                   None,                                       datetime.time(13,30),   None,    ),
-    "shabat_lunch":             (shabat.actions.shabat_lunch,           None,                   None,                                       datetime.time(14,0),    None,    ),
-    "post_lunch":               (shabat.actions.post_lunch,             None,                   None,                                       datetime.time(15,30),   None,    ),
-    "shabat_before_exit":       (shabat.actions.shabat_before_exit,     None,                   None,                                       None,                   datetime.timedelta(hours=-2), ),
+    "shabat_entrance":          ("Entrance",            shabat.actions.shabat_entrance,        None,                   datetime.timedelta(minutes=-5),             None,                   None,    ),
+    "prepare_to_dinner":        ("Start Oven (Dinner)", shabat.actions.prepare_to_dinner,      None,                   datetime.timedelta(minutes=30),             None,                   None,    ),
+    "shabat_dinner":            ("Dinner",              shabat.actions.shabat_dinner,          None,                   datetime.timedelta(minutes=45),             None,                   None,    ),
+    "post_dinner":              ("Stop Oven (Dinner)",  shabat.actions.post_dinner,            None,                   datetime.timedelta(hours=3, minutes=45),    None,                   None,    ),
+    "prepare_to_sleep":         ("Prepare to Sleep",    shabat.actions.prepare_to_sleep,       datetime.time(23,30),   None,                                       None,                   None,    ),
+    "shutdown_livingroom":      ("Shutdown Living Room",shabat.actions.shutdown_livingroom,    None,                   None,                                       datetime.time(1,30),    None,    ),
+    "shabat_morning":           ("Morning",             shabat.actions.shabat_morning,         None,                   None,                                       datetime.time(8,0),     None,    ),
+    "prepare_to_lunch_plata":   ("Start Plata (Lunch)", shabat.actions.prepare_to_lunch_plata, None,                   None,                                       datetime.time(11,30),   None,    ),
+    "prepare_to_lunch_oven":    ("Start Oven (Lunch)",  shabat.actions.prepare_to_lunch_oven,  None,                   None,                                       datetime.time(13,30),   None,    ),
+    "shabat_lunch":             ("Lunch",               shabat.actions.shabat_lunch,           None,                   None,                                       datetime.time(14,0),    None,    ),
+    "post_lunch":               ("Stop Oven",           shabat.actions.post_lunch,             None,                   None,                                       datetime.time(15,30),   None,    ),
+    "shabat_before_exit":       ("Twilight Time",       shabat.actions.shabat_before_exit,     None,                   None,                                       None,                   datetime.timedelta(hours=-2), ),
     }
 
 class Task(BaseModel):
@@ -35,11 +36,15 @@ class Task(BaseModel):
     name: str
     time: datetime.datetime
 
-    def get_info(self):
-        return 
+    description: Optional[str] = None
+
+    @validator("description", pre=True, always=True)
+    def set_description(cls, v, values, **kwargs):
+        """Set the eggs field based upon a spam value."""
+        return f"{values.get('time').strftime('%H:%M')} - {values.get('name')}"
 
 @shabat_router.get("/generate_tasks")
-async def task_status():
+async def generate_tasks():
     """
     
     schedule.every().friday.at('19:00').do(shabat_entrance)
@@ -64,7 +69,7 @@ async def task_status():
         shabat_start = shabat_day["start"]
         shabat_end   = shabat_day["end"]
         for action_name, action_params in shabat_actions.items():
-            _, start_abs, start_dyn, end_abs, end_dyn = action_params
+            name, _, start_abs, start_dyn, end_abs, end_dyn = action_params
             
             if start_abs:
                 task_time = datetime.datetime.combine(shabat_start.date(), start_abs)
@@ -79,7 +84,7 @@ async def task_status():
                 Task(
                     id=f"{action_name}_{shabat_start.strftime('%Y_%m_%d')}", 
                     handler=action_name,
-                    name=action_name, 
+                    name=name, 
                     time=task_time
                 )
             )

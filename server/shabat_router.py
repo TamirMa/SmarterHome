@@ -93,6 +93,11 @@ async def generate_tasks():
     
     return tasks
 
+@shabat_router.delete("/schedule")
+async def delete_all_scheduler():
+    scheduler.remove_all_jobs()
+    return "OK"
+
 @shabat_router.get("/schedule")
 async def schedule_shabat():
     return [

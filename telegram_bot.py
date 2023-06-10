@@ -101,6 +101,16 @@ async def handle_device_command(update: Update, context: CallbackContext):
             await query.edit_message_text(text=message)
         else:
             await query.edit_message_text(text=f'Cancelled')
+    
+    elif context.user_data.get('waiting_for_device') == 'tasks':
+        del context.user_data['waiting_for_device']
+        
+        if option == "clear":
+            actions.clear_tasks()
+            message = "Done."
+            await query.edit_message_text(text=message)
+        else:
+            await query.edit_message_text(text=f'Bye')
 
     elif context.user_data.get('waiting_for_device'):
         device_type = context.user_data.get('waiting_for_device')
@@ -242,6 +252,30 @@ async def handle_shabat_command(update: Update, context: CallbackContext):
     context.user_data['shabat'] = tasks
     
     await update.message.reply_text(message, reply_markup=reply_markup)
+
+async def handle_tasks_command(update: Update, context: CallbackContext):
+    await go_away(update, context)
+
+    logger.info(f'all command received')
+
+    # Create initial message:
+
+    tasks = actions.get_tasks()
+    message = "This is the list of tasks:\n"
+    message += '\n'.join([task["description"] for task in tasks])
+
+    reply_markup = InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton("Clear All", callback_data="clear"),
+                InlineKeyboardButton("Cancel", callback_data="cancel")
+            ],
+        ]
+    )
+
+    context.user_data['waiting_for_device'] = 'tasks'
+    
+    await update.message.reply_text(message, reply_markup=reply_markup)
         
 
 async def process_message(update: Update, context: CallbackContext):
@@ -268,6 +302,7 @@ def main():
     application.add_handler(CommandHandler(DeviceType.Dishwashers, handle_device_init))
     application.add_handler(CommandHandler("all", handle_all_command))
     application.add_handler(CommandHandler("shabat", handle_shabat_command))
+    application.add_handler(CommandHandler("tasks", handle_tasks_command))
     application.add_handler(CallbackQueryHandler(handle_device_command))
     application.add_handler(MessageHandler(filters.TEXT, process_message))
 

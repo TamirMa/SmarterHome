@@ -81,9 +81,7 @@ def set_tasks(tasks):
         data=json.dumps(tasks)
     )
 
-# def get_tasks(device_type:DeviceType):
-#     return [
-#         Task(id=task["id"], name=task["name"], time=task["time"]) for task in requests.get(
-#             f"http://{SERVER_IP}:{SERVER_PORT}/shabat/schedule"
-#         ).json()
-#     ]
+def clear_tasks():
+    return requests.delete(
+        f"http://{SERVER_IP}:{SERVER_PORT}/shabat/schedule"
+    )

@@ -2,10 +2,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-import schedule
-import threading
-import time
-import uvicorn
 import os
 
 from tools.logger import logger

@@ -6,10 +6,6 @@ import os
 from tools.logger import logger
 import threading
 import subprocess
-import asyncio
-
-import scheduler.main
-import telegram_bot
 
 SERVER_PORT = os.getenv("SERVER_PORT")
 

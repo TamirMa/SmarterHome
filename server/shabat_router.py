@@ -21,6 +21,7 @@ shabat_actions = {
     "shabat_dinner":            ("Dinner",              shabat.actions.shabat_dinner,          None,                   datetime.timedelta(minutes=45),             None,                   None,    ),
     "post_dinner":              ("Stop Oven (Dinner)",  shabat.actions.post_dinner,            None,                   datetime.timedelta(hours=3, minutes=45),    None,                   None,    ),
     "prepare_to_sleep":         ("Prepare to Sleep",    shabat.actions.prepare_to_sleep,       datetime.time(23,30),   None,                                       None,                   None,    ),
+    "start_dishwasher":         ("Dishwasher",          shabat.actions.start_dishwasher,       None,                   None,                                       datetime.time(0,15),    None,    ),
     "shutdown_livingroom":      ("Shutdown Living Room",shabat.actions.shutdown_livingroom,    None,                   None,                                       datetime.time(1,30),    None,    ),
     "shabat_morning":           ("Morning",             shabat.actions.shabat_morning,         None,                   None,                                       datetime.time(8,0),     None,    ),
     "prepare_to_lunch_plata":   ("Start Plata (Lunch)", shabat.actions.prepare_to_lunch_plata, None,                   None,                                       datetime.time(11,30),   None,    ),

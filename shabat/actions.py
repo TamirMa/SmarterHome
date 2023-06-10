@@ -1,6 +1,6 @@
 import time
 
-from server.control_router import LightState, SocketState
+from server.control_router import FanState, LightState, SocketState
 from tools import actions
 
 
@@ -46,6 +46,7 @@ def prepare_to_sleep():
     """
     actions.change_light_state("MasterBedroomLight", LightState.OFF)
     actions.change_socket_state("KitchenSocket", SocketState.OFF)
+    actions.change_fan_state("MasterBedroomFan", FanState.FAN3)
     
 
 def shutdown_livingroom():
@@ -65,12 +66,16 @@ def shutdown_livingroom():
     actions.change_light_state("MasterBedroomLight", LightState.OFF)
     # tools.change_light_state("MasterBedroomBathroomLight", LightState.OFF)
 
+def start_dishwasher():
+    actions.start_dishwasher()
+
 def shabat_morning():
     """
     Turn On - Toilet
     Open living room curtain
     """
     actions.change_light_state("GuestRestroomsToiletLight", LightState.ON)
+    actions.change_fan_state("MasterBedroomFan", FanState.STOP)
     
 def prepare_to_lunch_plata():
     actions.change_socket_state("KitchenSocket", SocketState.ON)

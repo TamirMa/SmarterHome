@@ -8,8 +8,8 @@ import re
 import os
 import datetime
 from server.control_router import CurtainState, DeviceType, LightState, SocketState
-from scheduler import tools
-import logging
+from tools import actions
+from tools.logger import logger
 from telegram import Update, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import CallbackQueryHandler, CommandHandler, MessageHandler, filters, CallbackContext, Application
 
@@ -19,9 +19,6 @@ ALLOWED_USER_IDs = [
     int(allowed_user_id) 
     for allowed_user_id in os.environ["TELEGRAM_ALLOWED_LIST"].split(",")
 ]
-
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
 
 async def go_away(update: Update, context: CallbackContext):
     if update.message.from_user.id not in ALLOWED_USER_IDs:
@@ -40,7 +37,7 @@ async def handle_device_init(update: Update, context: CallbackContext):
     logger.info(f'{device_type} command received')
 
     # Create buttons to slect language:
-    devices = tools.get_all_devices(device_type)
+    devices = actions.get_all_devices(device_type)
 
     # Create initial message:
     message = "Please choose a light from the list:"
@@ -76,13 +73,13 @@ async def handle_device_command(update: Update, context: CallbackContext):
     elif context.user_data.get('waiting_for_device') == 'all':
         del context.user_data['waiting_for_device']
         if option == "off":
-            light_devices = tools.get_all_devices(DeviceType.Lights)
-            socket_devices = tools.get_all_devices(DeviceType.Sockets)
+            light_devices = actions.get_all_devices(DeviceType.Lights)
+            socket_devices = actions.get_all_devices(DeviceType.Sockets)
 
             for device in light_devices:
-                tools.change_light_state(device, LightState.OFF)
+                actions.change_light_state(device, LightState.OFF)
             for device in socket_devices:
-                tools.change_light_state(device, SocketState.OFF)
+                actions.change_light_state(device, SocketState.OFF)
 
             await query.edit_message_text(text=f'Turned them all off')
         else:
@@ -91,7 +88,7 @@ async def handle_device_command(update: Update, context: CallbackContext):
     elif context.user_data.get('waiting_for_device'):
         device_type = context.user_data.get('waiting_for_device')
         del context.user_data['waiting_for_device']
-        devices = tools.get_all_devices(device_type)
+        devices = actions.get_all_devices(device_type)
         if option in devices:
             if device_type == DeviceType.Lights:
                 keyboard = [
@@ -153,29 +150,29 @@ async def handle_device_command(update: Update, context: CallbackContext):
             await query.edit_message_text(text=f'Cancelled')
 
         elif device_type == DeviceType.Lights:
-            tools.change_light_state(device, option)
+            actions.change_light_state(device, option)
             await query.edit_message_text(text=f'Turned light {device} {option}')
             
         elif device_type == DeviceType.Sockets:
-            tools.change_socket_state(device, option)
+            actions.change_socket_state(device, option)
             await query.edit_message_text(text=f'Turned socket {device} {option}')
 
         elif device_type == DeviceType.Curtains:
-            tools.change_curtain_state(device, option)
+            actions.change_curtain_state(device, option)
             await query.edit_message_text(text=f'Curtain {device} - {option}')
 
         elif device_type == DeviceType.Ovens:
             if option == "start_1":
-                tools.turn_on_oven(device_id=device)
+                actions.turn_on_oven(device_id=device)
             elif option == "stop":
-                tools.turn_off_oven(device_id=device)
+                actions.turn_off_oven(device_id=device)
             else:
                 raise Exception(f"Unknown command for oven - {option}")
             await query.edit_message_text(text=f'Turned oven {device} {option}')
 
         elif device_type == DeviceType.Dishwashers:
             if option == "start":
-                tools.start_dishwasher(device)
+                actions.start_dishwasher(device)
                 await query.edit_message_text(text=f'Starting dishwasher {device}')
 
         else:

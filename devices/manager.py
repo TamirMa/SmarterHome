@@ -1,4 +1,3 @@
-import logging
 import os
 import json
 
@@ -11,9 +10,7 @@ from connections.tuya import TuyaConnection
 from connections.yeelight import YeelightConnection
 from devices.generic import CurtainInterface, DishwasherInterface, LightInterface, OvenInterface, SocketInterface
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
-
+from tools.logger import logger
 
 CONNECTION_PARAMS_FILE = os.getenv('CONNECTION_PARAMS_FILE')
 DEVICES_FILE = os.getenv('DEVICES_FILE')

@@ -31,9 +31,14 @@ shabat_actions = {
 
 class Task(BaseModel):
     id: str
+    handler: str
+    name: str
     time: datetime.datetime
 
-@shabat_router.get("/schedule")
+    def get_info(self):
+        return 
+
+@shabat_router.get("/generate_tasks")
 async def task_status():
     """
     
@@ -71,28 +76,45 @@ async def task_status():
                 task_time = shabat_end + end_dyn
 
             tasks.append(
-                Task(id=f"{action_name}_{shabat_start.strftime('%Y_%m_%d')}", time=task_time)
+                Task(
+                    id=f"{action_name}_{shabat_start.strftime('%Y_%m_%d')}", 
+                    handler=action_name,
+                    name=action_name, 
+                    time=task_time
+                )
             )
 
     
     return tasks
 
+@shabat_router.get("/schedule")
+async def schedule_shabat():
+    return [
+        Task(
+            id=job.id,
+            handler=job.args[0],
+            name=job.name,
+            time=job.next_run_time,
+        )
+        for job in scheduler.get_jobs()
+    ]
+    
 @shabat_router.post("/schedule")
 async def schedule_shabat(tasks:list[Task]):
     for task in tasks:
-        if not shabat_actions.get(task.id):
-            raise Exception(f"Couldn't find handler for task {task.id}")
+        if not shabat_actions.get(task.handler):
+            raise Exception(f"Couldn't find handler for task {task.handler}")
 
     for task in tasks:
-        scheduler.add_job(execute_task, trigger='date', run_date=task.time, args=(task.id, ), name=task.id, id=task.id)
+        scheduler.add_job(execute_task, trigger='date', run_date=task.time, args=(task.handler, ), name=task.name, id=task.id, replace_existing=True)
     return "OK"
     
 
-def execute_task(task_id):
+def execute_task(task_handler):
 
-    task_handler = shabat_actions.get(task_id)
+    task_handler = shabat_actions.get(task_handler)
     if not task_handler:
-        logger.error(f"Couldn't find handler for task {task_id}")
+        logger.error(f"Couldn't find handler for task {task_handler}")
 
     method = task_handler[0]
 

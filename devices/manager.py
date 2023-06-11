@@ -73,7 +73,8 @@ class DeviceManager(object):
         print (f"Getting device {device_name}")
         device = self._devices.get(device_name)
         if not device:
-            raise Exception(f"Couldn't get the device {device_name}")
+            logger.exception(f"Couldn't get the device {device_name}")
+            return
 
         return device
 

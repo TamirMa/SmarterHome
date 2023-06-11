@@ -37,18 +37,23 @@ class DeviceManager(object):
         if not os.path.exists(CONNECTION_PARAMS_FILE):
             raise Exception(f"Couldn't open the ConnectionsParams file at '{CONNECTION_PARAMS_FILE}'")
 
-        self.reload_connections()
-        self.reload_devices()
+        self._connections = {}
+        self._devices = {}
+
+        # self.reload_connections()
+        # self.reload_devices()
 
     def reload_connections(self):
         connection_params = json.loads(open(CONNECTION_PARAMS_FILE, "r").read())
-        self._connections = { }
+        connections = { }
         for ConnectionClass in self.CONNECTIONS:
             try:
                 connection = ConnectionClass(connection_params.get(ConnectionClass.NAME))
-                self._connections[ConnectionClass.NAME] = connection
+                connections[ConnectionClass.NAME] = connection
             except:
                 logger.exception(f"Couldn't initialize connection {ConnectionClass}, skipping")
+
+        self._connections = connections
 
     def reload_devices(self):
 
@@ -56,7 +61,7 @@ class DeviceManager(object):
             raise Exception(f"Couldn't open the Devices file at '{DEVICES_FILE}'")
 
         all_devices = json.loads(open(DEVICES_FILE, "r").read())
-        self._devices = { }
+        devices = { }
 
         for device_definition in all_devices:
             connection = self._connections.get(device_definition["connection"])
@@ -64,13 +69,15 @@ class DeviceManager(object):
                 logger.error(f"Couldn't find a connection for device {device_definition['name']}")
                 continue
             try:
-                self._devices[device_definition["name"]] = connection.create_device(device_definition)
+                devices[device_definition["name"]] = connection.create_device(device_definition)
             except Exception as e:
                 logger.exception(f"Exception when creating a device: {device_definition['name']}, {device_definition}")
 
+        self._devices = devices
+
         
     def get_device_by_name(self, device_name):
-        print (f"Getting device {device_name}")
+        logger.debug (f"Getting device {device_name}")
         device = self._devices.get(device_name)
         if not device:
             raise Exception(f"Couldn't get the device {device_name}")
@@ -78,7 +85,7 @@ class DeviceManager(object):
         return device
 
     def get_devices_by_type(self, device_type=None):
-        print (f"Getting devices list ({device_type})")
+        logger.debug (f"Getting devices list ({device_type})")
         device_class = None
         if device_type == "light":
             device_class = LightInterface

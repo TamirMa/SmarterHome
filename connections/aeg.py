@@ -1,6 +1,7 @@
 import time
 from devices.aeg import AEGOven
 import pyelectroluxconnect
+from tools.logger import logger
 
 from connections.connection import Connection
 
@@ -38,7 +39,7 @@ class AEGConnection(Connection):
 
     def _validateToken(self):
         if self._tokenTimestamp is None or ((self._tokenTimestamp + self.TOKEN_REFRESH_MINUTES * 60) < time.time()):
-            print ("Getting AEG token")
+            logger.info("Getting AEG token")
             self._ses._createToken()
             self._ses.login()
             self._tokenTimestamp = time.time()
@@ -51,17 +52,17 @@ class AEGConnection(Connection):
     def get_all_appliances(self):
         self._validateToken()
         appllist = self._ses.getAppliances()
-        print(appllist)
+        logger.info(appllist)
         for appliance in appllist:  
-            print(self._ses.getApplianceConnectionState(appliance))
+            logger.info(self._ses.getApplianceConnectionState(appliance))
 
     def get_profile_for_appliance(self, appliance):
         self._validateToken()
-        print(self._ses.getApplianceProfile(appliance))
+        logger.info(self._ses.getApplianceProfile(appliance))
 
     def send_command(self, appliance, hacl, value, destination):
         self._validateToken()
-        print (f"Sending command {destination+':'+hacl} with value {value} to {appliance}")
+        logger.info (f"Sending command {destination+':'+hacl} with value {value} to {appliance}")
         self._ses.setHacl(appliance, hacl, value, destination)
 
     def read_state(self, appliance):

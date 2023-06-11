@@ -1,6 +1,6 @@
 import requests
 from devices.smartthings import SamsungTVDevice
-
+from tools.logger import logger
 from connections.connection import Connection
 
 class SmartThingsConnection(Connection):
@@ -30,4 +30,4 @@ class SmartThingsConnection(Connection):
                      }
                  ]
              }, headers={"Authorization": "Bearer " + self._pat})
-        print (res.content)
+        logger.info(res.content)

@@ -47,7 +47,7 @@ async def handle_device_init(update: Update, context: CallbackContext):
             [
                 InlineKeyboardButton(" ".join(re.findall(r'[A-Z][a-z]*', device)), callback_data=device)
             ]
-            for device in devices
+            for device in sorted(devices)
         ] + 
         [
             [

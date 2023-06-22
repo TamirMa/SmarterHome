@@ -3,10 +3,10 @@
 
 The best Python-FastAPI service for controlling your Smart Home using RestAPI. 
 
-
+Your smart home deserves a FastAPI for controlling it. Something that you won't be able to do when using openHAB or HomeAssistant
 
 ## But why?
-Your smart home deserves a FastAPI for controlling it. Something that you won't be able to do when using OpenHab or HomeAssistant
+It all started when I had to control all my devices on Shabbat. I wanted to have a scheduler controlling all my `lights/curtains/oven/dishwasher/..` and HA/openHAB had nothing to offer for that. So I've built this module for controlling all your devices through a FastAPI + Allowing to schedule tasks that will sync with Shabbat times each week.
 
 #### Controlling
 * AEG / Electrolux (Ovens - pyelectroluxconnect)

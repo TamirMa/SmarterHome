@@ -22,6 +22,7 @@ class CurtainState(str, Enum):
     STOP = "stop"
 
 class FanState(str, Enum):
+    LIGHT_TOGGLE = "light_toggle"
     FAN2 = "fan2"
     FAN3 = "fan3"
     STOP = "stop"
@@ -101,6 +102,7 @@ async def change_socket_state(device_id, socket_state: SocketState):
         raise Exception(f"Invalid state for socket {socket_state}")
      
 @control_router.post("/fan/{device_id}")
+@control_router.get("/fan/{device_id}")
 async def change_socket_state(device_id, fan_state: FanState):
     device = context.devices.get_device_by_name(device_id)
     if device == None or not isinstance(device, FanInterface):
@@ -113,6 +115,8 @@ async def change_socket_state(device_id, fan_state: FanState):
         fan.start_fan3()
     elif fan_state == FanState.STOP:
         fan.stop_fan()
+    elif fan_state == FanState.LIGHT_TOGGLE:
+        fan.toggle()
     else:
         raise Exception(f"Invalid state for fan {fan_state}")
      

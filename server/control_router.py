@@ -53,7 +53,6 @@ async def get_light_state(device_id):
     return light.is_on()
 
 @control_router.post("/light/{device_id}")
-@control_router.get("/light/{device_id}")
 async def change_light_state(device_id, light_state: LightState):
     device = context.devices.get_device_by_name(device_id)
     if device == None or not isinstance(device, LightInterface):
@@ -67,6 +66,18 @@ async def change_light_state(device_id, light_state: LightState):
     else:
         raise Exception(f"Invalid state for light {light_state}")
 
+@control_router.get("/light/{device_id}/toggle")
+async def change_light_state(device_id):
+    device = context.devices.get_device_by_name(device_id)
+    if device == None or not isinstance(device, LightInterface):
+        raise Exception(f"This is not a light device ({device_id})")
+    light : LightInterface = device
+    
+    if light.is_on():
+        light.turn_off()
+    else:
+        light.turn_on()
+    
 @control_router.get("/socket/{device_id}/state")
 async def get_socket_state(device_id):
     device = context.devices.get_device_by_name(device_id)

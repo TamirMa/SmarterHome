@@ -17,7 +17,7 @@ from telegram.ext import CallbackQueryHandler, CommandHandler, MessageHandler, f
 TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 ALLOWED_USER_IDs = [
     int(allowed_user_id) 
-    for allowed_user_id in os.getenv("TELEGRAM_ALLOWED_LIST").split(",")
+    for allowed_user_id in os.getenv("TELEGRAM_ALLOWED_LIST", "0").split(",")
 ]
 
 async def go_away(update: Update, context: CallbackContext):
@@ -292,6 +292,11 @@ async def process_message(update: Update, context: CallbackContext):
     await update.message.reply_text(f'what?')
 
 def main():
+
+    if not TOKEN:
+        logger.error("Telegram TOKEN is empty, cannot start the bot")
+        return
+        
     application = Application.builder().token(TOKEN).build()
     
     application.add_handler(CommandHandler('hello', hello))

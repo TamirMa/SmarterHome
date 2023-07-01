@@ -26,6 +26,8 @@ def start_fast_api():
         SERVER_PORT,
         '--host',
         '0.0.0.0',
+        '--workers',
+        '2',
     ]
     subprocess.run(uvicorn_command, check=True)
 

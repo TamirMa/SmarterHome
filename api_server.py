@@ -62,5 +62,5 @@ def reload_devices():
     context.devices.reload_devices()
 
 # Schedule the job to run every 5 minutes
-scheduler.add_job(reload_devices, 'interval', minutes=5, next_run_time=datetime.datetime.now() + datetime.timedelta(seconds=10))
+scheduler.add_job(reload_devices, 'interval', minutes=10, next_run_time=datetime.datetime.now() + datetime.timedelta(seconds=10), jitter=5*60)
 

@@ -6,7 +6,7 @@ load_dotenv()  # take environment variables from .env.
 
 import re
 import os
-import datetime
+import shabat.actions
 from server.control_router import CurtainState, DeviceType, LightState, SocketState
 from tools import actions
 from tools.logger import logger
@@ -284,12 +284,12 @@ async def handle_test_shabat_command(update: Update, context: CallbackContext):
 
     # Create initial message:
 
-    if actions.test_shabat_tasks():
+    if shabat.actions.test_scheduler():
         message = "Tested shabat tasks"
     else:
         message = "Exception when testing shabat tasks, please check logs"
     
-    await update.message.reply_text("message")
+    await update.message.reply_text(message)
         
 
 async def process_message(update: Update, context: CallbackContext):

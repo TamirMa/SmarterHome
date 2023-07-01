@@ -120,12 +120,6 @@ async def schedule_shabat(tasks:list[Task]):
         scheduler.add_job(execute_task, trigger='date', run_date=task.time, args=(task.handler, ), name=task.name, id=task.id, replace_existing=True)
     return "OK"
 
-@shabat_router.post("/test")
-async def schedule_shabat():
-    shabat.actions.test_scheduler()
-    return "OK"
-    
-
 def execute_task(task_handler):
 
     task_handler = shabat_actions.get(task_handler)

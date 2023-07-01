@@ -94,13 +94,13 @@ def shabat_lunch():
 
 def post_lunch():
     actions.turn_off_oven()
+    actions.change_socket_state("KitchenSocket", SocketState.OFF)
 
 def shabat_before_exit():
     """
     Turn On - Balcony, Living Room Light, Hand Wash Sink
     Turn Off - DiningTable
     """
-    actions.change_socket_state("KitchenSocket", SocketState.OFF)
     actions.change_light_state("BalconyLight", LightState.ON)
     actions.change_light_state("LivingRoomLight", LightState.ON)
     actions.change_light_state("GuestRestroomsSinkLight", LightState.ON)

@@ -65,6 +65,11 @@ def get_all_devices(device_type:DeviceType):
         }
     ).json()
 
+def test_shabat_tasks():
+    return requests.post(
+        f"http://{SERVER_IP}:{SERVER_PORT}/shabat/test"
+    ).status_code == 200
+
 def generate_shabat_tasks():
     return requests.get(
         f"http://{SERVER_IP}:{SERVER_PORT}/shabat/generate_tasks"

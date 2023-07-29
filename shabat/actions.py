@@ -75,7 +75,6 @@ def shabat_morning():
     Open living room curtain
     """
     actions.change_light_state("GuestRestroomsToiletLight", LightState.ON)
-    actions.change_fan_state("MasterBedroomFan", FanState.STOP)
     
 def prepare_to_lunch_plata():
     actions.change_socket_state("KitchenSocket", SocketState.ON)
@@ -91,6 +90,7 @@ def shabat_lunch():
     actions.change_light_state("KitchenMainLight", LightState.ON)
     actions.change_light_state("KitchenSecondaryLight", LightState.ON)
     actions.change_light_state("KitchenLED", LightState.ON)
+    actions.change_fan_state("MasterBedroomFan", FanState.STOP)
 
 def post_lunch():
     actions.turn_off_oven()

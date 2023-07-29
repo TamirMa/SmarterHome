@@ -6,7 +6,7 @@ load_dotenv()  # take environment variables from .env.
 
 import re
 import os
-import datetime
+import shabat.actions
 from server.control_router import CurtainState, DeviceType, LightState, SocketState
 from tools import actions
 from tools.logger import logger
@@ -277,6 +277,20 @@ async def handle_tasks_command(update: Update, context: CallbackContext):
     
     await update.message.reply_text(message, reply_markup=reply_markup)
         
+async def handle_test_shabat_command(update: Update, context: CallbackContext):
+    await go_away(update, context)
+
+    logger.info(f'test shabat command received')
+
+    # Create initial message:
+
+    if shabat.actions.test_scheduler():
+        message = "Tested shabat tasks"
+    else:
+        message = "Exception when testing shabat tasks, please check logs"
+    
+    await update.message.reply_text(message)
+        
 
 async def process_message(update: Update, context: CallbackContext):
     await go_away(update, context)
@@ -308,6 +322,7 @@ def main():
     application.add_handler(CommandHandler("all", handle_all_command))
     application.add_handler(CommandHandler("shabat", handle_shabat_command))
     application.add_handler(CommandHandler("tasks", handle_tasks_command))
+    application.add_handler(CommandHandler("test", handle_test_shabat_command))
     application.add_handler(CallbackQueryHandler(handle_device_command))
     application.add_handler(MessageHandler(filters.TEXT, process_message))
 

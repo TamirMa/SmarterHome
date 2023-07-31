@@ -40,7 +40,7 @@ async def handle_device_init(update: Update, context: CallbackContext):
     devices = actions.get_all_devices(device_type)
 
     # Create initial message:
-    message = "Please choose a {device_type} from the list:"
+    message = f"Please choose a {device_type} from the list:"
 
     reply_markup = InlineKeyboardMarkup(
         [

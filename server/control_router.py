@@ -40,6 +40,7 @@ class DeviceType(str, Enum):
     Dishwashers = "dishwasher"
     ACs = "ac"
     Curtains = "curtain"
+    Fans = "fan"
 
 @control_router.get("/all")
 async def get_all_devices(device_type:DeviceType):

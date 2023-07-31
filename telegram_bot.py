@@ -7,7 +7,7 @@ load_dotenv()  # take environment variables from .env.
 import re
 import os
 import shabat.actions
-from server.control_router import CurtainState, DeviceType, LightState, SocketState
+from server.control_router import CurtainState, DeviceType, FanState, LightState, SocketState
 from tools import actions
 from tools.logger import logger
 from telegram import Update, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup
@@ -40,7 +40,7 @@ async def handle_device_init(update: Update, context: CallbackContext):
     devices = actions.get_all_devices(device_type)
 
     # Create initial message:
-    message = "Please choose a light from the list:"
+    message = "Please choose a {device_type} from the list:"
 
     reply_markup = InlineKeyboardMarkup(
         [
@@ -75,11 +75,14 @@ async def handle_device_command(update: Update, context: CallbackContext):
         if option == "off":
             light_devices = actions.get_all_devices(DeviceType.Lights)
             socket_devices = actions.get_all_devices(DeviceType.Sockets)
+            fan_devices = actions.get_all_devices(DeviceType.Fans)
 
             for device in light_devices:
                 actions.change_light_state(device, LightState.OFF)
             for device in socket_devices:
-                actions.change_light_state(device, SocketState.OFF)
+                actions.change_socket_state(device, SocketState.OFF)
+            for device in fan_devices:
+                actions.change_fan_state(device, FanState.STOP)
 
             await query.edit_message_text(text=f'Turned them all off')
         else:
@@ -148,6 +151,15 @@ async def handle_device_command(update: Update, context: CallbackContext):
                         InlineKeyboardButton("Cancel", callback_data="cancel")
                     ],
                 ]
+            elif device_type == DeviceType.Fans:
+                keyboard = [
+                    [
+                        InlineKeyboardButton("Fan3", callback_data=FanState.FAN3),
+                        InlineKeyboardButton("Fan2", callback_data=FanState.FAN2),
+                        InlineKeyboardButton("Stop", callback_data=FanState.STOP),
+                        InlineKeyboardButton("Cancel", callback_data="cancel")
+                    ],
+                ]
             elif device_type == DeviceType.Curtains:
                 keyboard = [
                     [
@@ -187,6 +199,10 @@ async def handle_device_command(update: Update, context: CallbackContext):
         elif device_type == DeviceType.Curtains:
             actions.change_curtain_state(device, option)
             await query.edit_message_text(text=f'Curtain {device} - {option}')
+        
+        elif device_type == DeviceType.Fans:
+            actions.change_fan_state(device, option)
+            await query.edit_message_text(text=f'Fan {device} - {option}')
 
         elif device_type == DeviceType.Ovens:
             if option == "start_1":
@@ -319,6 +335,7 @@ def main():
     application.add_handler(CommandHandler(DeviceType.Ovens, handle_device_init))
     application.add_handler(CommandHandler(DeviceType.Curtains, handle_device_init))
     application.add_handler(CommandHandler(DeviceType.Dishwashers, handle_device_init))
+    application.add_handler(CommandHandler(DeviceType.Fans, handle_device_init))
     application.add_handler(CommandHandler("all", handle_all_command))
     application.add_handler(CommandHandler("shabat", handle_shabat_command))
     application.add_handler(CommandHandler("tasks", handle_tasks_command))

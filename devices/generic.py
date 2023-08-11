@@ -1,10 +1,11 @@
 from enum import Enum
 
 class GenericDevice(object):
-    def __init__(self, connection, device_id, sub_device_id=None):
+    def __init__(self, connection, device_id, sub_device_id=None, linked_device=None):
         self._connection = connection
         self._device_id = device_id
         self._sub_device_id = sub_device_id
+        self._linked_device = linked_device
     
 
 class SwitchInterface(object):

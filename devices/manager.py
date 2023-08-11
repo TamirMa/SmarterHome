@@ -69,7 +69,7 @@ class DeviceManager(object):
                 logger.error(f"Couldn't find a connection for device {device_definition['name']}")
                 continue
             try:
-                devices[device_definition["name"]] = connection.create_device(device_definition)
+                devices[device_definition["name"]] = connection.create_device(device_definition, all_connections=self._connections)
             except Exception as e:
                 logger.exception(f"Exception when creating a device: {device_definition['name']}, {device_definition}")
 

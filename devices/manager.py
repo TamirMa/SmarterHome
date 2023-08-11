@@ -8,7 +8,7 @@ from connections.shelly import ShellyConnection
 from connections.smartthings import SmartThingsConnection
 from connections.tuya import TuyaConnection
 from connections.yeelight import YeelightConnection
-from devices.generic import CurtainInterface, DishwasherInterface, FanInterface, LightInterface, OvenInterface, SocketInterface
+from devices.generic import AirConditionInterface, CurtainInterface, DishwasherInterface, FanInterface, LightInterface, OvenInterface, SocketInterface
 
 from tools.logger import logger
 
@@ -94,6 +94,8 @@ class DeviceManager(object):
             device_class = OvenInterface
         elif device_type == "dishwasher":
             device_class = DishwasherInterface
+        elif device_type == "ac":
+            device_class = AirConditionInterface
         elif device_type == "curtain":
             device_class = CurtainInterface
         elif device_type == "socket":

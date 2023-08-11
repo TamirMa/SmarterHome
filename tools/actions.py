@@ -1,8 +1,9 @@
 import json
 import os
 import requests
+from devices.generic import AirConditionInterface
 
-from server.control_router import CurtainState, DeviceType, FanState, LightState, SocketState
+from server.control_router import ACState, CurtainState, DeviceType, FanState, LightState, SocketState
 from devices.aeg import AEGOven
 
 SERVER_IP = os.getenv("SERVER_IP")
@@ -35,6 +36,31 @@ def change_curtain_state(device_id, curtain_state : CurtainState):
 def start_dishwasher(device_id="Dishwasher"):
     requests.post(
         f"http://{SERVER_IP}:{SERVER_PORT}/devices/dishwasher/{device_id}/start"
+    )
+
+def turn_on_ac(device_id, temperature=None, fan_speed=AirConditionInterface.FAN_SPEED.AUTO, ac_mode=AirConditionInterface.AC_MODE.AUTO):
+    """
+    Turn On - AC
+    """
+    requests.post(
+        f"http://{SERVER_IP}:{SERVER_PORT}/devices/ac/{device_id}",
+        params={
+            "ac_state": ACState.ON,
+            # "temperature": temperature,
+            "fan_speed": fan_speed,
+            "ac_mode": ac_mode,
+        }
+    )
+
+def turn_off_ac(device_id):
+    """
+    Turn Off - AC
+    """
+    requests.post(
+        f"http://{SERVER_IP}:{SERVER_PORT}/devices/ac/{device_id}",
+        params={
+            "ac_state": ACState.OFF,
+        }
     )
 
 def turn_on_oven(device_id="AEGOven", program=AEGOven.PROGRAMS.TRUE_FAN_COOKING, temperature=180):

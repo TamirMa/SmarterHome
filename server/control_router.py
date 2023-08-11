@@ -127,7 +127,7 @@ async def change_fan_state(device_id, fan_state: FanState):
 
 @control_router.post("/ac/{device_id}")
 async def change_ac_state(device_id, 
-                              ac_state : ACState = None, 
+                              ac_state : ACState, 
                               temperature : int = None, 
                               ac_mode : AirConditionInterface.AC_MODE = None, 
                               fan_speed : AirConditionInterface.FAN_SPEED = None):

@@ -144,6 +144,14 @@ async def handle_device_command(update: Update, context: CallbackContext):
                         InlineKeyboardButton("Cancel", callback_data="cancel")
                     ],
                 ]
+            elif device_type == DeviceType.ACs:
+                keyboard = [
+                    [
+                        InlineKeyboardButton("Turn On", callback_data="on"),
+                        InlineKeyboardButton("Stop", callback_data="stop"),
+                        InlineKeyboardButton("Cancel", callback_data="cancel")
+                    ],
+                ]
             elif device_type == DeviceType.Dishwashers:
                 keyboard = [
                     [
@@ -212,6 +220,15 @@ async def handle_device_command(update: Update, context: CallbackContext):
             else:
                 raise Exception(f"Unknown command for oven - {option}")
             await query.edit_message_text(text=f'Turned oven {device} {option}')
+        
+        elif device_type == DeviceType.ACs:
+            if option == "on":
+                actions.turn_on_ac(device_id=device)
+            elif option == "stop":
+                actions.turn_off_ac(device_id=device)
+            else:
+                raise Exception(f"Unknown command for AC - {option}")
+            await query.edit_message_text(text=f'AC {device}: {option}')
 
         elif device_type == DeviceType.Dishwashers:
             if option == "start":
@@ -336,6 +353,7 @@ def main():
     application.add_handler(CommandHandler(DeviceType.Curtains, handle_device_init))
     application.add_handler(CommandHandler(DeviceType.Dishwashers, handle_device_init))
     application.add_handler(CommandHandler(DeviceType.Fans, handle_device_init))
+    application.add_handler(CommandHandler(DeviceType.ACs, handle_device_init))
     application.add_handler(CommandHandler("all", handle_all_command))
     application.add_handler(CommandHandler("shabat", handle_shabat_command))
     application.add_handler(CommandHandler("tasks", handle_tasks_command))

@@ -1,3 +1,5 @@
+from enum import Enum
+
 class GenericDevice(object):
     def __init__(self, connection, device_id, sub_device_id=None):
         self._connection = connection
@@ -29,6 +31,37 @@ class FanInterface(object):
         raise NotImplementedError()
 
     def stop_fan(self):
+        raise NotImplementedError()
+
+
+class AirConditionInterface(object):
+
+    class FAN_SPEED(str, Enum):
+        LOW = "low"
+        MID = "middle"
+        HIGH = "high"
+        AUTO = "auto"
+
+    class AC_MODE(str, Enum):
+        COOLING = "cooling"
+        HEATING = "heating"
+        AUTO = "auto"
+        FAN_ONLY = "fan"
+        DEHUM = "dehum"
+    
+    def turn_on(self):
+        raise NotImplementedError()
+
+    def turn_off(self):
+        raise NotImplementedError()
+
+    def set_temperature(self, temp):
+        raise NotImplementedError()
+    
+    def set_fan_speed(self, fan_speed : FAN_SPEED):
+        raise NotImplementedError()
+    
+    def set_mode(self, ac_mode : AC_MODE):
         raise NotImplementedError()
 
 

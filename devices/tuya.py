@@ -1,5 +1,5 @@
 
-from devices.generic import CurtainInterface, LightInterface, SocketInterface, GenericDevice
+from devices.generic import AirConditionInterface, CurtainInterface, LightInterface, SocketInterface, GenericDevice
 
 
 class TuyaBaseDevice(GenericDevice):
@@ -36,3 +36,21 @@ class TuyaCurtainDevice(TuyaBaseDevice, CurtainInterface):
     def stop(self):
         self._d.set_value('1', 'stop')
 
+class TuyaACDevice(TuyaBaseDevice, AirConditionInterface):
+
+    def turn_on(self):
+        self._d.set_value('1', True)
+
+    def turn_off(self):
+        self._d.set_value('1', False)
+
+    def set_temperature(self, temp):
+        if not isinstance(temp, int) or (temp < 18) or (temp > 30):
+            raise Exception("Temperature should be a number between 18°C-30°C")
+        self._d.set_value('2', temp)
+    
+    def set_fan_speed(self, fan_speed: AirConditionInterface.FAN_SPEED):
+        self._d.set_value('5', fan_speed)
+    
+    def set_mode(self, ac_mode: AirConditionInterface.AC_MODE):
+        self._d.set_value('4', ac_mode)

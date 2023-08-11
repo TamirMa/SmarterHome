@@ -1,6 +1,6 @@
 from enum import Enum
 from devices.aeg import AEGOven
-from devices.generic import CurtainInterface, FanInterface, LightInterface, SocketInterface, SwitchInterface
+from devices.generic import AirConditionInterface, CurtainInterface, FanInterface, LightInterface, SocketInterface, SwitchInterface
 from devices.homeconnect import BoschDishwasher
 from devices.smartthings import SamsungTVDevice
 from starlette_context import context
@@ -13,6 +13,10 @@ class LightState(str, Enum):
     OFF = "off"
 
 class SocketState(str, Enum):
+    ON = "on"
+    OFF = "off"
+    
+class ACState(str, Enum):
     ON = "on"
     OFF = "off"
     
@@ -55,7 +59,7 @@ async def get_light_state(device_id):
     return light.is_on()
 
 @control_router.post("/light/{device_id}")
-async def change_light_state(device_id, light_state: LightState):
+async def change_light_state_post(device_id, light_state: LightState):
     device = context.devices.get_device_by_name(device_id)
     if device == None or not isinstance(device, LightInterface):
         raise Exception(f"This is not a light device ({device_id})")
@@ -69,7 +73,7 @@ async def change_light_state(device_id, light_state: LightState):
         raise Exception(f"Invalid state for light {light_state}")
 
 @control_router.get("/light/{device_id}/toggle")
-async def change_light_state(device_id):
+async def change_light_state_get(device_id):
     device = context.devices.get_device_by_name(device_id)
     if device == None or not isinstance(device, LightInterface):
         raise Exception(f"This is not a light device ({device_id})")
@@ -81,7 +85,7 @@ async def change_light_state(device_id):
         light.turn_on()
     
 @control_router.get("/socket/{device_id}/state")
-async def get_socket_state(device_id):
+async def get_socket_state_get(device_id):
     device = context.devices.get_device_by_name(device_id)
     if device == None or not isinstance(device, SocketInterface):
         raise Exception(f"This is not a socket device ({device_id})")
@@ -89,7 +93,7 @@ async def get_socket_state(device_id):
     return socket.is_on()
 
 @control_router.post("/socket/{device_id}")
-async def change_socket_state(device_id, socket_state: SocketState):
+async def change_socket_state_post(device_id, socket_state: SocketState):
     device = context.devices.get_device_by_name(device_id)
     if device == None or not isinstance(device, SocketInterface):
         raise Exception(f"This is not a socket device ({device_id})")
@@ -104,7 +108,7 @@ async def change_socket_state(device_id, socket_state: SocketState):
      
 @control_router.post("/fan/{device_id}")
 @control_router.get("/fan/{device_id}")
-async def change_socket_state(device_id, fan_state: FanState):
+async def change_fan_state(device_id, fan_state: FanState):
     device = context.devices.get_device_by_name(device_id)
     if device == None or not isinstance(device, FanInterface):
         raise Exception(f"This is not a fan device ({device_id})")
@@ -120,7 +124,33 @@ async def change_socket_state(device_id, fan_state: FanState):
         fan.toggle()
     else:
         raise Exception(f"Invalid state for fan {fan_state}")
-     
+
+@control_router.post("/ac/{device_id}")
+async def change_ac_state(device_id, 
+                              ac_state : ACState = None, 
+                              temperature : int = None, 
+                              ac_mode : AirConditionInterface.AC_MODE = None, 
+                              fan_speed : AirConditionInterface.FAN_SPEED = None):
+    device = context.devices.get_device_by_name(device_id)
+    if device == None or not isinstance(device, AirConditionInterface):
+        raise Exception(f"This is not a AC device ({device_id})")
+    ac : AirConditionInterface = device
+    
+    if ac_state == ACState.ON:
+        ac.turn_on()
+
+        if temperature != None:
+            ac.set_temperature(temperature)
+            
+        if ac_mode != None:
+            ac.set_mode(ac_mode)
+        
+        if fan_speed != None:
+            ac.set_fan_speed(fan_speed)   
+              
+    elif ac_state == ACState.OFF:
+        ac.turn_off()
+
 
 @control_router.post("/curtain/{device_id}/state")
 async def change_curtain_state(device_id, curtain_state: CurtainState):
@@ -151,13 +181,13 @@ async def turn_off_oven(device_id):
     return True
 
 @control_router.post("/dishwasher/{device_id}/start")
-async def turn_on_oven(device_id, program: BoschDishwasher.PROGRAMS = BoschDishwasher.PROGRAMS.AUTO):
+async def turn_on_dishwasher(device_id, program: BoschDishwasher.PROGRAMS = BoschDishwasher.PROGRAMS.AUTO):
     dishwasher : BoschDishwasher = context.devices.get_device_by_name(device_id)
     dishwasher.start(program)
     return True
 
 @control_router.post("/tv/{device_id}")
-async def change_light_state(device_id, tv_command: TVCommands):
+async def change_tv_state(device_id, tv_command: TVCommands):
     tv : SamsungTVDevice = context.devices.get_device_by_name(device_id)
     if tv_command == TVCommands.ON:
         tv.switch_on()

@@ -18,3 +18,10 @@ class ShellySwitchDevice(ShellyBaseDevice, LightInterface):
     def is_on(self):
         super(ShellySwitchDevice, self).is_on()
 
+    def get_consumption(self):
+        try:
+            consumption_dict = self._d.meter(self._sub_device_id if self._sub_device_id != None else 0)
+            return consumption_dict.get("power")
+        except ShellyPy.error.NotFound:
+            return None
+

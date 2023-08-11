@@ -9,13 +9,13 @@ class Connection(object):
 
     def create_device(self, device_definition, all_connections : dict):
         linked_device = None
-        linked_device_definition = device_definition.get("linked_device_definition")
+        linked_device_definition = device_definition.get("linked_device")
         if linked_device_definition:
             connection = all_connections.get(linked_device_definition["connection"])
             if not connection:
                 logger.error(f"Couldn't find a connection for device {linked_device_definition['name']}")
             try:
-                linked_device = connection.create_device(device_definition, all_connections=self._connections)
+                linked_device = connection.create_device(linked_device_definition, all_connections=all_connections)
             except Exception as e:
                 logger.exception(f"Exception when creating a device: {linked_device_definition['name']}, {linked_device_definition}")
 

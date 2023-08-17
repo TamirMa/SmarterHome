@@ -28,6 +28,13 @@ class Connection(object):
         if not device_id:
             raise Exception("Couldn't get the device id")
         Device = self.DEVICES.get(device_type)
-        return Device(self, device_id, sub_device_id=device_definition.get("sub_device_id"), linked_device=linked_device)
+        return Device(
+                self, 
+                device_id, 
+                sub_device_id=
+                device_definition.get("sub_device_id"), 
+                linked_device=linked_device,
+                hidden=device_definition.get("hidden")
+            )
         
         

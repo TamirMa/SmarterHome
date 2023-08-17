@@ -110,6 +110,6 @@ class DeviceManager(object):
         return [
             device_id
             for device_id, device in self._devices.items()
-            if device_type == None or isinstance(device, device_class)
+            if (device_type == None or isinstance(device, device_class)) and (not device.is_hidden())
         ]
         

@@ -25,9 +25,11 @@ class AEGConnection(Connection):
         self._ses = pyelectroluxconnect.Session(
             self._connection_params.get("username"), 
             self._connection_params.get("password"), 
-            region="apac", 
+            region="emea", 
+            # region="apac", 
             tokenFileName = ".electrolux-token", 
-            country = "IL", 
+            country = "FR", 
+            # country = "IL", 
             language = None, 
             deviceId = "CustomDeviceId", 
             verifySsl = True, 

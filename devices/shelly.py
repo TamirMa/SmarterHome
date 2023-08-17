@@ -16,7 +16,7 @@ class ShellySwitchDevice(ShellyBaseDevice, LightInterface):
         self._d.relay(self._sub_device_id if self._sub_device_id != None else 0, turn=False)
 
     def is_on(self):
-        super(ShellySwitchDevice, self).is_on()
+        return self._d.relay(self._sub_device_id if self._sub_device_id != None else 0).get("ison", False)
 
     def get_consumption(self):
         try:

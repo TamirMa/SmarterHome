@@ -16,12 +16,22 @@ class ShellySwitchDevice(ShellyBaseDevice, LightInterface):
         self._d.relay(self._sub_device_id if self._sub_device_id != None else 0, turn=False)
 
     def is_on(self):
-        return self._d.relay(self._sub_device_id if self._sub_device_id != None else 0).get("ison", False)
+        relay_status = self._d.relay(self._sub_device_id if self._sub_device_id != None else 0)
+        if isinstance(self._d, ShellyPy.ShellyGen1):
+            return relay_status.get("ison", False)
+        if isinstance(self._d, ShellyPy.ShellyGen2):
+            return relay_status.get("output", False)
 
     def get_consumption(self):
-        try:
-            consumption_dict = self._d.meter(self._sub_device_id if self._sub_device_id != None else 0)
-            return consumption_dict.get("power")
-        except ShellyPy.error.NotFound:
-            return None
-
+        if isinstance(self._d, ShellyPy.ShellyGen1):
+            try:
+                consumption_dict = self._d.meter(self._sub_device_id if self._sub_device_id != None else 0)
+                return consumption_dict.get("power")
+            except ShellyPy.error.NotFound:
+                return None
+        if isinstance(self._d, ShellyPy.ShellyGen2):
+            try:
+                consumption_dict = self._d.relay(self._sub_device_id if self._sub_device_id != None else 0)
+                return consumption_dict.get("apower")
+            except ShellyPy.error.NotFound:
+                return None

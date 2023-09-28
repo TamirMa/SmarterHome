@@ -125,9 +125,9 @@ async def change_fan_state(device_id, fan_state: FanState):
     elif fan_state == FanState.LIGHT_TOGGLE:
         fan.toggle()
     elif fan_state == FanState.LIGHT_ON:
-        fan.light_on()
+        fan.turn_on()
     elif fan_state == FanState.LIGHT_OFF:
-        fan.light_off()
+        fan.turn_off()
     else:
         raise Exception(f"Invalid state for fan {fan_state}")
 

@@ -22,7 +22,7 @@ class BroadlinkFanDevice(GenericDevice, FanInterface, LightInterface):
         FAN6 = 'Fan3'
 
     CONSUMPTION_MAP = [
-        (0, 5,  (STATES.LIGHT_OFF, STATES.FAN_OFF)),
+        (0, 18,  (STATES.LIGHT_OFF, STATES.FAN_OFF)),
         (19,23, (STATES.LIGHT_ON, STATES.FAN_OFF)),
     ]
 

@@ -26,9 +26,9 @@ class ShellySwitchDevice(ShellyBaseDevice, LightInterface):
         try:
             consumption_dict = self._d.meter(self._sub_device_id if self._sub_device_id != None else 0)
             return consumption_dict.get("power")
-        except ShellyPy.error.NotFound:
+        except NotImplementedError:
             try:
                 consumption_dict = self._d.relay(self._sub_device_id if self._sub_device_id != None else 0)
                 return consumption_dict.get("apower")
-            except ShellyPy.error.NotFound:
+            except NotImplementedError:
                 return None

@@ -23,7 +23,7 @@ class BroadlinkFanDevice(GenericDevice, FanInterface, LightInterface):
 
     CONSUMPTION_MAP = [
         (0, 18,  (STATES.LIGHT_OFF, STATES.FAN_OFF)),
-        (19,23, (STATES.LIGHT_ON, STATES.FAN_OFF)),
+        (19,50, (STATES.LIGHT_ON, STATES.FAN_OFF)),
     ]
 
     def _update_state(self):

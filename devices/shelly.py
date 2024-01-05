@@ -1,5 +1,5 @@
 
-from devices.generic import LightInterface, GenericDevice
+from devices.generic import LightInterface, GenericDevice, SocketInterface
 import ShellyPy
 
 
@@ -14,7 +14,7 @@ class ShellyBaseDevice(GenericDevice):
             else:
                 raise
         
-class ShellySwitchDevice(ShellyBaseDevice, LightInterface):
+class ShellySwitchDevice(ShellyBaseDevice):
     def turn_on(self):
         self._d.relay(self._sub_device_id if self._sub_device_id != None else 0, turn=True)
 
@@ -38,3 +38,9 @@ class ShellySwitchDevice(ShellyBaseDevice, LightInterface):
                 return consumption_dict.get("apower")
             except NotImplementedError:
                 return None
+
+class ShellyLightDevice(ShellySwitchDevice, LightInterface):
+    pass
+
+class ShellySocketDevice(ShellySwitchDevice, SocketInterface):
+    pass

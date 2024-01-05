@@ -1,13 +1,13 @@
 from connections.connection import Connection
-from devices.shelly import ShellySwitchDevice
+from devices.shelly import ShellySocketDevice, ShellyLightDevice
 
 class ShellyConnection(Connection):
 
     NAME = "Shelly"
 
     DEVICES = {
-        "Light": ShellySwitchDevice,
-        "Socket": ShellySwitchDevice,
+        "Light": ShellyLightDevice,
+        "Socket": ShellySocketDevice,
     }
 
 

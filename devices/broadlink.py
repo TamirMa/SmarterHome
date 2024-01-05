@@ -2,6 +2,8 @@
 from enum import Enum
 from devices.generic import FanInterface, GenericDevice, LightInterface
 
+from tools.logger import logger
+
 class BroadlinkFanDevice(GenericDevice, FanInterface, LightInterface):
 
     class COMMANDS(str, Enum):
@@ -37,6 +39,8 @@ class BroadlinkFanDevice(GenericDevice, FanInterface, LightInterface):
                         self._light_state = light_state
                         self._fan_state = fan_state
                         return
+            else:
+                logger.error("Consumption device returned None")
         
         self._light_state = self.STATES.LIGHT_OFF
         self._fan_state = self.STATES.FAN_OFF

@@ -6,7 +6,13 @@ import ShellyPy
 class ShellyBaseDevice(GenericDevice):
     def __init__(self, *args, **kwargs):
         super(ShellyBaseDevice, self).__init__(*args, **kwargs)
-        self._d = ShellyPy.Shelly(self._device_id)
+        try:
+            self._d = ShellyPy.Shelly(self._device_id)
+        except ValueError as e:
+            if "Generation 3 not supported" in str(e):
+                self._d = ShellyPy.ShellyGen2(self._device_id)
+            else:
+                raise
         
 class ShellySwitchDevice(ShellyBaseDevice, LightInterface):
     def turn_on(self):

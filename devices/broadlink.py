@@ -4,7 +4,7 @@ from devices.generic import FanInterface, GenericDevice, LightInterface
 
 from tools.logger import logger
 
-class BroadlinkFanDevice(GenericDevice, FanInterface, LightInterface):
+class BroadlinkFanDevice(GenericDevice, FanInterface):
 
     class COMMANDS(str, Enum):
         LIGHT = 'Light'

@@ -3,11 +3,17 @@ import os
 import requests
 from devices.generic import AirConditionInterface
 
-from server.control_router import ACState, CurtainState, DeviceType, FanState, HeaterState, LightState, SocketState
+from server.control_router import ACState, CurtainState, DeviceType, FanState, HeaterState, LightState, SocketState, TVCommands
 from devices.aeg import AEGOven
 
 SERVER_IP = os.getenv("SERVER_IP")
 SERVER_PORT = os.getenv("SERVER_PORT")
+
+def apply_tv_command(device_id, tv_command : TVCommands):
+    requests.post(
+        f"http://{SERVER_IP}:{SERVER_PORT}/devices/tv/{device_id}",
+        params={"tv_command": tv_command}
+    )
 
 def change_light_state(device_id, light_state : LightState):
     requests.post(

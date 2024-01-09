@@ -7,7 +7,7 @@ load_dotenv()  # take environment variables from .env.
 import re
 import os
 import shabat.actions
-from server.control_router import CurtainState, DeviceType, FanState, LightState, SocketState
+from server.control_router import CurtainState, DeviceType, FanState, LightState, SocketState, TVCommands
 from tools import actions
 from tools.logger import logger
 from telegram import Update, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup
@@ -78,6 +78,7 @@ async def handle_device_command(update: Update, context: CallbackContext):
             fan_devices = actions.get_all_devices(DeviceType.Fans)
             heater_devices = actions.get_all_devices(DeviceType.Heaters)
             ac_devices = actions.get_all_devices(DeviceType.ACs)
+            tv_devices = actions.get_all_devices(DeviceType.TVs)
 
             for device in light_devices:
                 actions.change_light_state(device, LightState.OFF)
@@ -89,6 +90,8 @@ async def handle_device_command(update: Update, context: CallbackContext):
                 actions.turn_off_ac(device)
             for device in heater_devices:
                 actions.turn_off_heater(device)
+            for device in tv_devices:
+                actions.apply_tv_command(device, TVCommands.OFF)
 
             await query.edit_message_text(text=f'Turned them all off')
         else:

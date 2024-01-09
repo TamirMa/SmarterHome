@@ -76,6 +76,8 @@ async def handle_device_command(update: Update, context: CallbackContext):
             light_devices = actions.get_all_devices(DeviceType.Lights)
             socket_devices = actions.get_all_devices(DeviceType.Sockets)
             fan_devices = actions.get_all_devices(DeviceType.Fans)
+            heater_devices = actions.get_all_devices(DeviceType.Heaters)
+            ac_devices = actions.get_all_devices(DeviceType.ACs)
 
             for device in light_devices:
                 actions.change_light_state(device, LightState.OFF)
@@ -83,6 +85,10 @@ async def handle_device_command(update: Update, context: CallbackContext):
                 actions.change_socket_state(device, SocketState.OFF)
             for device in fan_devices:
                 actions.change_fan_state(device, FanState.STOP)
+            for device in ac_devices:
+                actions.turn_off_ac(device)
+            for device in heater_devices:
+                actions.turn_off_heater(device)
 
             await query.edit_message_text(text=f'Turned them all off')
         else:

@@ -8,7 +8,7 @@ from connections.shelly import ShellyConnection
 from connections.smartthings import SmartThingsConnection
 from connections.tuya import TuyaConnection
 from connections.yeelight import YeelightConnection
-from devices.generic import AirConditionInterface, CurtainInterface, DishwasherInterface, FanInterface, LightInterface, OvenInterface, SocketInterface
+from devices.generic import AirConditionInterface, HeaterInterface, CurtainInterface, DishwasherInterface, FanInterface, LightInterface, OvenInterface, SocketInterface
 
 from tools.logger import logger
 
@@ -49,9 +49,10 @@ class DeviceManager(object):
         for ConnectionClass in self.CONNECTIONS:
             try:
                 connection = ConnectionClass(connection_params.get(ConnectionClass.NAME))
+                logger.info(f"Initialized connection {ConnectionClass.NAME}")
                 connections[ConnectionClass.NAME] = connection
             except:
-                logger.exception(f"Couldn't initialize connection {ConnectionClass}, skipping")
+                logger.exception(f"Couldn't initialize connection {ConnectionClass.NAME}, skipping")
 
         self._connections = connections
 
@@ -70,6 +71,7 @@ class DeviceManager(object):
                 continue
             try:
                 devices[device_definition["name"]] = connection.create_device(device_definition, all_connections=self._connections)
+                logger.info(f"Initialized device {device_definition['name']}")
             except Exception as e:
                 logger.exception(f"Exception when creating a device: {device_definition['name']}, {device_definition}")
 
@@ -100,10 +102,12 @@ class DeviceManager(object):
             device_class = CurtainInterface
         elif device_type == "socket":
             device_class = SocketInterface
+        elif device_type == "heater":
+            device_class = HeaterInterface
         elif device_type == "fan":
             device_class = FanInterface
         elif device_type == "all":
-            pass
+            device_type = None
         else:
             raise Exception(f"Unknow device type {device_type}")
 

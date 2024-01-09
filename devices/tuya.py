@@ -1,5 +1,5 @@
 
-from devices.generic import AirConditionInterface, CurtainInterface, LightInterface, SocketInterface, GenericDevice
+from devices.generic import AirConditionInterface, CurtainInterface, LightInterface, SocketInterface, GenericDevice, HeaterInterface
 
 
 class TuyaBaseDevice(GenericDevice):
@@ -54,3 +54,19 @@ class TuyaACDevice(TuyaBaseDevice, AirConditionInterface):
     
     def set_mode(self, ac_mode: AirConditionInterface.AC_MODE):
         self._d.set_value('4', ac_mode)
+
+
+class TuyaHeaterDevice(TuyaBaseDevice, HeaterInterface):
+    # We don't really need to use the sub_device_id because on all of our devices
+    # we only have 1 curtain per device, if in the future we want to have a seconday
+    # curtain, the dps value to update should be 4
+    def turn_on(self, timer=None):
+        self._d.set_value('1', True)
+        if isinstance(timer, int):
+            self._d.set_value('7', timer)
+
+    def turn_off(self):
+        self._d.set_value('1', False)
+
+    def is_on(self):
+        return self._d.status()['dps']['1'] == True

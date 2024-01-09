@@ -28,6 +28,18 @@ class LightInterface(SwitchInterface):
 class SocketInterface(SwitchInterface):
     pass
 
+
+class HeaterInterface(object):
+    def turn_on(self, timer=None):
+        raise NotImplementedError()
+
+    def turn_off(self):
+        raise NotImplementedError()
+
+    def is_on(self):
+        raise NotImplementedError()
+
+
 class FanInterface(object):
     def start_fan2(self):
         raise NotImplementedError()

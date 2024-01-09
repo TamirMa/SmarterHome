@@ -1,6 +1,6 @@
 from enum import Enum
 from devices.aeg import AEGOven
-from devices.generic import AirConditionInterface, CurtainInterface, FanInterface, LightInterface, SocketInterface, SwitchInterface
+from devices.generic import AirConditionInterface, HeaterInterface, CurtainInterface, FanInterface, LightInterface, SocketInterface, SwitchInterface
 from devices.homeconnect import BoschDishwasher
 from devices.smartthings import SamsungTVDevice
 from starlette_context import context
@@ -9,6 +9,10 @@ from fastapi import APIRouter
 control_router = APIRouter()
 
 class LightState(str, Enum):
+    ON = "on"
+    OFF = "off"
+
+class HeaterState(str, Enum):
     ON = "on"
     OFF = "off"
 
@@ -46,6 +50,7 @@ class DeviceType(str, Enum):
     Dishwashers = "dishwasher"
     ACs = "ac"
     Curtains = "curtain"
+    Heaters = "heater"
     Fans = "fan"
 
 @control_router.get("/all")
@@ -130,6 +135,23 @@ async def change_fan_state(device_id, fan_state: FanState):
         fan.turn_off()
     else:
         raise Exception(f"Invalid state for fan {fan_state}")
+
+@control_router.post("/heater/{device_id}")
+async def change_heater_state_post(device_id, 
+                                heater_state: HeaterState,
+                                timer : int = None, 
+                                ):
+    device = context.devices.get_device_by_name(device_id)
+    if device == None or not isinstance(device, HeaterInterface):
+        raise Exception(f"This is not a heater device ({device_id})")
+    heater : HeaterInterface = device
+    
+    if heater_state == HeaterState.ON:
+        heater.turn_on(timer=timer)
+    elif heater_state == HeaterState.OFF:
+        heater.turn_off()
+    else:
+        raise Exception(f"Invalid state for heater {heater_state}")
 
 @control_router.post("/ac/{device_id}")
 async def change_ac_state(device_id, 

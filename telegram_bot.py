@@ -144,6 +144,15 @@ async def handle_device_command(update: Update, context: CallbackContext):
                         InlineKeyboardButton("Cancel", callback_data="cancel")
                     ],
                 ]
+            elif device_type == DeviceType.Heaters:
+                keyboard = [
+                    [
+                        InlineKeyboardButton("On[120])", callback_data="on_120"),
+                        InlineKeyboardButton("On[30]", callback_data="on_30"),
+                        InlineKeyboardButton("Off", callback_data="off"),
+                        InlineKeyboardButton("Cancel", callback_data="cancel")
+                    ],
+                ]
             elif device_type == DeviceType.ACs:
                 keyboard = [
                     [
@@ -220,6 +229,17 @@ async def handle_device_command(update: Update, context: CallbackContext):
             else:
                 raise Exception(f"Unknown command for oven - {option}")
             await query.edit_message_text(text=f'Turned oven {device} {option}')
+        
+        elif device_type == DeviceType.Heaters:
+            if option == "on_120":
+                actions.turn_on_heater(device_id=device, timer=120)
+            elif option == "on_30":
+                actions.turn_on_heater(device_id=device, timer=30)
+            elif option == "off":
+                actions.turn_off_heater(device_id=device)
+            else:
+                raise Exception(f"Unknown command for heater - {option}")
+            await query.edit_message_text(text=f'Turned heater {device} {option}')
         
         elif device_type == DeviceType.ACs:
             if option == "on":
@@ -353,6 +373,7 @@ def main():
     application.add_handler(CommandHandler(DeviceType.Curtains, handle_device_init))
     application.add_handler(CommandHandler(DeviceType.Dishwashers, handle_device_init))
     application.add_handler(CommandHandler(DeviceType.Fans, handle_device_init))
+    application.add_handler(CommandHandler(DeviceType.Heaters, handle_device_init))
     application.add_handler(CommandHandler(DeviceType.ACs, handle_device_init))
     application.add_handler(CommandHandler("all", handle_all_command))
     application.add_handler(CommandHandler("shabat", handle_shabat_command))

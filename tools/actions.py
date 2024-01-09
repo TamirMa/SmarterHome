@@ -3,7 +3,7 @@ import os
 import requests
 from devices.generic import AirConditionInterface
 
-from server.control_router import ACState, CurtainState, DeviceType, FanState, LightState, SocketState
+from server.control_router import ACState, CurtainState, DeviceType, FanState, HeaterState, LightState, SocketState
 from devices.aeg import AEGOven
 
 SERVER_IP = os.getenv("SERVER_IP")
@@ -81,6 +81,29 @@ def turn_off_oven(device_id="AEGOven"):
     """
     requests.post(
         f"http://{SERVER_IP}:{SERVER_PORT}/devices/oven/{device_id}/off",
+    )
+
+def turn_on_heater(device_id, timer):
+    """
+    Turn On - Heater
+    """
+    requests.post(
+        f"http://{SERVER_IP}:{SERVER_PORT}/devices/heater/{device_id}",
+        params={
+            "heater_state": HeaterState.ON,
+            "timer": timer,
+        }
+    )
+
+def turn_off_heater(device_id):
+    """
+    Turn Off - Heater
+    """
+    requests.post(
+        f"http://{SERVER_IP}:{SERVER_PORT}/devices/heater/{device_id}",
+        params={
+            "heater_state": HeaterState.OFF,
+        }
     )
 
 def get_all_devices(device_type:DeviceType):

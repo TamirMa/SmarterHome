@@ -97,3 +97,10 @@ class OvenInterface(object):
 
 class DishwasherInterface(object):
     pass
+
+class TVInterface(GenericDevice):
+    def switch_on(self):
+        raise NotImplementedError()
+
+    def switch_off(self):
+        raise NotImplementedError()

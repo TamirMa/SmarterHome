@@ -1,6 +1,6 @@
-from devices.generic import GenericDevice
+from devices.generic import TVInterface
 
-class SamsungTVDevice(GenericDevice):
+class SamsungTVDevice(TVInterface):
     def switch_on(self):
         self._connection.send_command(self._device_id, "main", "switch", "on")
 

@@ -1,6 +1,6 @@
 from enum import Enum
 from devices.aeg import AEGOven
-from devices.generic import AirConditionInterface, HeaterInterface, CurtainInterface, FanInterface, LightInterface, SocketInterface, SwitchInterface
+from devices.generic import AirConditionInterface, HeaterInterface, CurtainInterface, FanInterface, LightInterface, SocketInterface, SwitchInterface, TVInterface
 from devices.homeconnect import BoschDishwasher
 from devices.smartthings import SamsungTVDevice
 from starlette_context import context
@@ -52,6 +52,7 @@ class DeviceType(str, Enum):
     Curtains = "curtain"
     Heaters = "heater"
     Fans = "fan"
+    TVs = "tv"
 
 @control_router.get("/all")
 async def get_all_devices(device_type:DeviceType):
@@ -216,7 +217,11 @@ async def turn_on_dishwasher(device_id, program: BoschDishwasher.PROGRAMS = Bosc
 
 @control_router.post("/tv/{device_id}")
 async def change_tv_state(device_id, tv_command: TVCommands):
-    tv : SamsungTVDevice = context.devices.get_device_by_name(device_id)
+    device = context.devices.get_device_by_name(device_id)
+    if device == None or not isinstance(device, TVInterface):
+        raise Exception(f"This is not a curtain device ({device_id})")
+    tv : TVInterface = device
+
     if tv_command == TVCommands.ON:
         tv.switch_on()
     elif tv_command == TVCommands.OFF:

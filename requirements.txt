@@ -10,3 +10,4 @@ broadlink==0.18.3
 homeconnect==0.7.2
 yeelight==0.7.10
 python-telegram-bot==20.1
+google-nest-sdm==3.0.3

@@ -137,25 +137,33 @@ class TelegramWatcherCallback(DeviceWatcherCallback):
             event_time = event_json["timestamp"].astimezone(pytz.timezone("Israel"))
             event_state = event_json["event_thread_state"]
 
-            if "sdm.devices.events.DoorbellChime.Chime" in event_json["resourceUpdate"]["events"] and event_message.event_id not in self._chime_sent:
+            if "sdm.devices.events.DoorbellChime.Chime" in event_json["resourceUpdate"]["events"]:
                 doorbell_chime_event = event_json["resourceUpdate"]["events"]["sdm.devices.events.DoorbellChime.Chime"]
-                await self.send_doorbell_chime_telegram_notification(event_time, doorbell_chime_event)
-                self._chime_sent.add(event_message.event_id)
+                event_session_id = doorbell_chime_event["eventSessionId"]
+                if event_session_id not in self._chime_sent:
+                    await self.send_doorbell_chime_telegram_notification(event_time, doorbell_chime_event)
+                self._chime_sent.add(event_session_id)
 
-            if ("sdm.devices.events.CameraPerson.Person" in event_json["resourceUpdate"]["events"]) and event_message.event_id not in self._person_sent:
+            if ("sdm.devices.events.CameraPerson.Person" in event_json["resourceUpdate"]["events"]):
                 person_chime_event = event_json["resourceUpdate"]["events"]["sdm.devices.events.CameraPerson.Person"]
-                await self.send_person_detected_telegram_notification(event_time, person_chime_event)
-                self._person_sent.add(event_message.event_id)
+                event_session_id = motion_chime_event["eventSessionId"]
+                if event_session_id not in self._person_sent:
+                    await self.send_person_detected_telegram_notification(event_time, person_chime_event)
+                self._person_sent.add(event_session_id)
  
-            if ("sdm.devices.events.CameraMotion.Motion" in event_json["resourceUpdate"]["events"]) and event_message.event_id not in self._motion_sent:
+            if ("sdm.devices.events.CameraMotion.Motion" in event_json["resourceUpdate"]["events"]):
                 motion_chime_event = event_json["resourceUpdate"]["events"]["sdm.devices.events.CameraMotion.Motion"]
-                await self.send_motion_detected_telegram_notification(event_time, motion_chime_event)
-                self._motion_sent.add(event_message.event_id)
+                event_session_id = motion_chime_event["eventSessionId"]
+                if event_session_id not in self._motion_sent:
+                    await self.send_motion_detected_telegram_notification(event_time, motion_chime_event)
+                self._motion_sent.add(event_session_id)
  
-            if "sdm.devices.events.CameraClipPreview.ClipPreview" in event_json["resourceUpdate"]["events"] and event_message.event_id not in self._clip_sent:
+            if "sdm.devices.events.CameraClipPreview.ClipPreview" in event_json["resourceUpdate"]["events"]:
                 clip_preview_event = event_json["resourceUpdate"]["events"]["sdm.devices.events.CameraClipPreview.ClipPreview"]
-                await self.send_clip_preview_telegram_notification(event_time, clip_preview_event)
-                self._clip_sent.add(event_message.event_id)
+                event_session_id = clip_preview_event["eventSessionId"]
+                if event_session_id not in self._clip_sent:
+                    await self.send_clip_preview_telegram_notification(event_time, clip_preview_event)
+                self._clip_sent.add(event_session_id)
 
         except Exception as e:
             logger.exception(f"Error sending Telegram message: {e}")

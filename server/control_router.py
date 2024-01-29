@@ -200,14 +200,13 @@ async def change_curtain_state(device_id, curtain_state: CurtainState):
 @control_router.post("/oven/{device_id}/on")
 async def turn_on_oven(device_id, program: AEGOven.PROGRAMS, temperature: int):
     oven : AEGOven = context.devices.get_device_by_name(device_id)
-    oven.turn_on(program, temperature)
-    return True
+    return await oven.turn_on(program, temperature)
+    
 
 @control_router.post("/oven/{device_id}/off")
 async def turn_off_oven(device_id):
     oven : AEGOven = context.devices.get_device_by_name(device_id)
-    oven.turn_off()
-    return True
+    return await oven.turn_off()
 
 @control_router.post("/dishwasher/{device_id}/start")
 async def turn_on_dishwasher(device_id, program: BoschDishwasher.PROGRAMS = BoschDishwasher.PROGRAMS.AUTO):

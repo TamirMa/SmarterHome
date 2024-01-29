@@ -1,6 +1,6 @@
-import time
+
 from devices.aeg import AEGOven
-import pyelectroluxconnect
+from pyelectroluxocp.oneAppApi import OneAppApi
 from tools.logger import logger
 
 from connections.connection import Connection
@@ -14,59 +14,24 @@ class AEGConnection(Connection):
         "Oven": AEGOven,
     }
     
-    TOKEN_REFRESH_MINUTES = 60
-
     def __init__(self, *args, **kwargs):
         super(AEGConnection, self).__init__(*args, **kwargs)
         
         if not (self._connection_params.get("username")  and self._connection_params.get("password")):
             raise Exception("AEG username/password missing")
         
-        self._ses = pyelectroluxconnect.Session(
+        self._aeg_api = OneAppApi(
             self._connection_params.get("username"), 
-            self._connection_params.get("password"), 
-            region="emea", 
-            # region="apac", 
-            tokenFileName = ".electrolux-token", 
-            country = "FR", 
-            # country = "IL", 
-            language = None, 
-            deviceId = "CustomDeviceId", 
-            verifySsl = True, 
-            regionServer=None, 
-            customApiKey=None, 
-            customApiBrand=None
+            self._connection_params.get("password"),
         )
-        self._tokenTimestamp = None
 
-    def _validateToken(self):
-        if self._tokenTimestamp is None or ((self._tokenTimestamp + self.TOKEN_REFRESH_MINUTES * 60) < time.time()):
-            logger.info("Getting AEG token")
-            self._ses._createToken()
-            self._ses.login()
-            self._tokenTimestamp = time.time()
+    async def get_all_appliances(self):
+        logger.info(await self._aeg_api.get_appliances_list(includeMetadata=False))
 
-    def check_login(self):
-        if self._last_login == None or self._last_login + 6 * 60 * 60 < time.time():
-            self._ses.login()
-            self._last_login = time.time()
+    async def send_command(self, appliance_id, command_dict):
+        logger.info (f"Sending command {command_dict} to {appliance_id}")
+        await self._aeg_api.execute_appliance_command(appliance_id, command_dict)
 
-    def get_all_appliances(self):
-        self._validateToken()
-        appllist = self._ses.getAppliances()
-        logger.info(appllist)
-        for appliance in appllist:  
-            logger.info(self._ses.getApplianceConnectionState(appliance))
-
-    def get_profile_for_appliance(self, appliance):
-        self._validateToken()
-        logger.info(self._ses.getApplianceProfile(appliance))
-
-    def send_command(self, appliance, hacl, value, destination):
-        self._validateToken()
-        logger.info (f"Sending command {destination+':'+hacl} with value {value} to {appliance}")
-        self._ses.setHacl(appliance, hacl, value, destination)
-
-    def read_state(self, appliance):
-        self._validateToken()
-        return self._ses.getApplianceState(appliance, paramName = None, rawOutput = False)
+    async def get_device_property(self, appliance_id, property_id):
+        device_state = await self._aeg_api.get_appliance_status(appliance_id, includeMetadata=False)
+        return device_state["properties"]["reported"].get(property_id)

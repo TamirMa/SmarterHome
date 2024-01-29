@@ -66,6 +66,7 @@ async def get_light_state(device_id):
     light : LightInterface = device
     return light.is_on()
 
+@control_router.get("/light/{device_id}")
 @control_router.post("/light/{device_id}")
 async def change_light_state_post(device_id, light_state: LightState):
     device = context.devices.get_device_by_name(device_id)

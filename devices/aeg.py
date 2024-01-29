@@ -1,6 +1,7 @@
 
 from enum import Enum
 from devices.generic import OvenInterface, GenericDevice
+from tools.logger import logger
 
 
 class AEGOven(GenericDevice, OvenInterface):
@@ -14,67 +15,59 @@ class AEGOven(GenericDevice, OvenInterface):
         PIZZA_FUNCTION = 'Pizza Function'
         FROZEN_FOODS = 'Frozen Foods'
         BOTTOM_HEAT = 'Bottom Heat'
-        NORMAL = 'Normal'
         STEAM_BAKE = 'Steam Bake'
-        QUICK = 'Quick'
-        INTENSE = 'Intense'
 
-    PROGRAMS_MAPPING = {'True Fan Cooking': '871D',
-        'Turbo Grilling': '7150',
-        'Moist Fan Baking': '2548',
-        'Grill': 'C6EA',
-        'Conventional Cooking': '039C',
-        'Pizza Function': '70ED',
-        'Frozen Foods': '1EA8',
-        'Bottom Heat': '1510',
-        'Normal': '9CCD',
-        'Steam Bake': '31C9',
-        'Quick': '71A9',
-        'Intense': '98E8'
+    PROGRAMS_MAPPING = {'True Fan Cooking': 'TRUE_FAN',
+        'Turbo Grilling': 'GRILL_FAN',
+        'Moist Fan Baking': 'MOIST_FAN_BAKING',
+        'Grill': 'GRILL',
+        'Conventional Cooking': 'CONVENTIONAL_COOKING',
+        'Pizza Function': 'PIZZA',
+        'Frozen Foods': 'FROZEN_FOOD',
+        'Bottom Heat': 'BOTTOM',
+        'Steam Bake': 'DIRECT_STEAM',
     }
-    
-    class CODES:
-        PROGRAM = "0x1440"
-        TEMPERATURE = "0x0432"
-        LIGHT = "0x0490"
-        COMMAND = "0x0403"
-        STATE = "0x0401"
 
-
-    # def __init__(self, *args, **kwargs):
-    #     super(AEGOven, self).__init__(*args, **kwargs)
-
-    #     self._updated_state = self._connection.read_state(self._device_id)
-
-    def turn_on(self, program, temperature):
-        self._updated_state = self._connection.read_state(self._device_id)
+    async def turn_on(self, program, temperature):
+        appliance_state = await self._connection.get_device_property(self._device_id, "applianceState")
         
-        self._set_program(program)
-        self._set_temperature(temperature)
-        self._light_on()
-        if self._updated_state["OV1:" + self.CODES.STATE]['stringValue'] != 'Running':
-            self._connection.send_command(self._device_id, AEGOven.CODES.COMMAND, "2", "OV1") # start
+        if appliance_state not in ('READY_TO_START', 'RUNNING'):
+            logger.error(f"Can't start oven, Oven '{self._device_id}' is in state: '{appliance_state}'")
 
-    def turn_off(self):
-        self._connection.send_command(self._device_id, AEGOven.CODES.COMMAND, "3", "OV1") # stop
+        await self.set_program(program)
+        await self.set_temperature(temperature)
+
+        appliance_state = await self._connection.get_device_property(self._device_id, "applianceState")
+        logger.info(f"Oven '{self._device_id}' is '{appliance_state}'")
+        if appliance_state == 'READY_TO_START':
+            logger.info(f"starting oven.")
+            await self._connection.send_command(self._device_id, {"executeCommand" : "START"}) # start
+        elif appliance_state == 'RUNNING':
+            logger.info(f"ignoring start.")
+        else: 
+            raise Exception(f"How did we get here?? Oven state was changed while setting the program and temperature")
+
+    async def turn_off(self):
+        await self._connection.send_command(self._device_id, {"executeCommand" : "STOPRESET"}) # stop
         
-    def _light_on(self):
-        if self._updated_state["OV1:" + self.CODES.LIGHT]['stringValue'] != 'On':
-            self._connection.send_command(self._device_id, AEGOven.CODES.LIGHT, "1", "OV1") # light
-        
-    def _light_off(self):
-        self._connection.send_command(self._device_id, AEGOven.CODES.LIGHT, "0", "OV1") # light
-    
-    def _set_program(self, program_name):
+    async def set_program(self, program_name):
         program_code = self.PROGRAMS_MAPPING.get(program_name)
         if not program_code:
-            raise Exception(f"Couldn't find a code for program {program_name}")
-            
-        # if self._updated_state["OV1:" + self.CODES.PROGRAM]['stringValue'] != program_code:
-        self._connection.send_command(self._device_id, AEGOven.CODES.PROGRAM, "0x" + program_code, "OV1")
+            raise Exception(f"Couldn't find the program '{program_name}'")
+        
+        if await self._connection.get_device_property(self._device_id, "program") != program_code:
+            await self._connection.send_command(self._device_id, {"program" : program_code})
     
-    def _set_temperature(self, temperature):
-        # if self._updated_state["OV1:" + self.CODES.TEMPERATURE]['container']['1']['numberValue'] != temperature:
-        self._connection.send_command(self._device_id, AEGOven.CODES.TEMPERATURE, [{"1":str(temperature)},{"3":"0"},{"0":"0"}], "OV1")
+    async def set_temperature(self, temperature):
+        if await self._connection.get_device_property(self._device_id, "targetTemperatureC") != temperature:
+            await self._connection.send_command(self._device_id, {"targetTemperatureC" : temperature})
 
+    
+    async def light_on(self):
+        if not await self._connection.get_device_property(self._device_id, "cavityLight"):
+            await self._connection.send_command(self._device_id, {"cavityLight": "ON"})
+        
+    async def light_off(self):
+        if await self._connection.get_device_property(self._device_id, "cavityLight"):
+            await self._connection.send_command(self._device_id, {"cavityLight": "OFF"})
     

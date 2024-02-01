@@ -76,8 +76,8 @@ class TelegramWatcherCallback(DeviceWatcherCallback):
 
         logger.info("Telegram text message sent successfully!")
 
-    async def send_person_detected_telegram_notification(self, event_time, motion_chime_event) -> None:
-        zones = motion_chime_event["zones"]
+    async def send_person_detected_telegram_notification(self, event_time, person_detected_event) -> None:
+        zones = person_detected_event["zones"]
         if 'Door' in zones:
             text_message = "Someone is at the door"
         else:
@@ -145,10 +145,10 @@ class TelegramWatcherCallback(DeviceWatcherCallback):
                 self._chime_sent.add(event_session_id)
 
             if ("sdm.devices.events.CameraPerson.Person" in event_json["resourceUpdate"]["events"]):
-                person_chime_event = event_json["resourceUpdate"]["events"]["sdm.devices.events.CameraPerson.Person"]
-                event_session_id = motion_chime_event["eventSessionId"]
+                person_detected_event = event_json["resourceUpdate"]["events"]["sdm.devices.events.CameraPerson.Person"]
+                event_session_id = person_detected_event["eventSessionId"]
                 if event_session_id not in self._person_sent:
-                    await self.send_person_detected_telegram_notification(event_time, person_chime_event)
+                    await self.send_person_detected_telegram_notification(event_time, person_detected_event)
                 self._person_sent.add(event_session_id)
  
             if ("sdm.devices.events.CameraMotion.Motion" in event_json["resourceUpdate"]["events"]):

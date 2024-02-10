@@ -18,7 +18,7 @@ class GoogleConnection(Connection):
     NAME = "Google"
 
     DEVICES = {
-        "Doorbell": NestDeviceAPI,
+        "Doorbell": NestDoorbellDevice,
     }
     
     NEST_SCOPE = "oauth2:https://www.googleapis.com/auth/nest-account"
@@ -35,11 +35,11 @@ class GoogleConnection(Connection):
             password=self._connection_params.get("password"),
         )
 
-    def make_nest_get_request(self, url : str, params={}):
-        url = url.format(device_id=self._device_id)
+    def make_nest_get_request(self, device_id : str, url : str, params={}):
+        url = url.format(device_id=device_id)
         logger.debug(f"Sending request to: '{url}' with params: '{params}'")
 
-        access_token = self._auth.get_access_token(service=GoogleConnection.NEST_SCOPE)
+        access_token = self._google_auth.get_access_token(service=GoogleConnection.NEST_SCOPE)
         if not access_token:
             raise Exception("Couldn't get a Nest access token")
         

@@ -31,7 +31,11 @@ class NestDoorbellDevice(GenericDevice, DoorbellInterface):
             "variant" : 2,
         }
         return self._parse_events(
-            self._connection.make_get_request(NestDoorbellDevice.EVENTS_URI, params=params)
+            self._connection.make_nest_get_request(
+                self._device_id,
+                NestDoorbellDevice.EVENTS_URI, 
+                params=params
+            )
         )
         
     def download_specific_media(self, media_id, nc_media):
@@ -54,4 +58,8 @@ class NestDoorbellDevice(GenericDevice, DoorbellInterface):
             "start_time" : int(start_time.timestamp()*1000), # 1707368737876
             "end_time" : int(end_time.timestamp()*1000), # 1707368757371
         }
-        return self._connection.make_get_request(NestDoorbellDevice.DOWNLOAD_VIDEO_URI, params=params)
+        return self._connection.make_nest_get_request(
+            self._device_id,
+            NestDoorbellDevice.DOWNLOAD_VIDEO_URI, 
+            params=params
+        )

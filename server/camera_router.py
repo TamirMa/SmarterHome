@@ -21,7 +21,7 @@ class CameraEvent(BaseModel):
     start_time: datetime.datetime
     duration: datetime.timedelta
 
-    end_time: Optional[str] = None
+    end_time: Optional[datetime.datetime] = None
 
     @validator("end_time", pre=True, always=True)
     def set_end_time(cls, v, values, **kwargs):
@@ -42,9 +42,10 @@ async def retrieve_events(end_time : datetime.datetime, duration_minutes: int):
             end_time,
         )
 
-        for event in events
+        for event in events:
             all_events.append(
                 CameraEvent(
+                    device_id=device_id,
                     start_time=datetime.datetime.fromisoformat(event["programDateTime"]),
                     duration=min(datetime.timedelta(minutes=1), isodate.parse_duration(event["duration"]))
                 )

@@ -36,7 +36,7 @@ class CameraInterface(object):
         raise NotImplemented()
 
 
-class DoorbellInterface(object):
+class DoorbellInterface(CameraInterface):
     pass
 
 class HeaterInterface(object):

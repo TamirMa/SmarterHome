@@ -16,7 +16,7 @@ class NestDoorbellDevice(GenericDevice, DoorbellInterface):
     DOWNLOAD_VIDEO_URI = NEST_API_DOMAIN + "/mp4clip/namespace/nest-phoenix-prod/device/{device_id}"
 
     
-    def parse_events(self, events_xml):
+    def _parse_events(self, events_xml):
         root = ET.fromstring(events_xml)
         periods = root.findall(".//{urn:mpeg:dash:schema:mpd:2011}Period")
         return [
@@ -30,7 +30,7 @@ class NestDoorbellDevice(GenericDevice, DoorbellInterface):
             "types": 4, 
             "variant" : 2,
         }
-        return self.parse_events(
+        return self._parse_events(
             self._connection.make_get_request(NestDoorbellDevice.EVENTS_URI, params=params)
         )
         
@@ -49,7 +49,7 @@ class NestDoorbellDevice(GenericDevice, DoorbellInterface):
         # MK51ObA%3D%3D
         raise NotImplemented() 
 
-    def download_video_by_times(self, start_time, end_time):
+    def download_event_by_time(self, start_time, end_time):
         params = {
             "start_time" : int(start_time.timestamp()*1000), # 1707368737876
             "end_time" : int(end_time.timestamp()*1000), # 1707368757371

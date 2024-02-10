@@ -7,7 +7,8 @@ load_dotenv()  # take environment variables from .env.
 import re
 import os
 import shabat.actions
-from server.control_router import CurtainState, DeviceType, FanState, LightState, SocketState, TVCommands
+from server.control_router import CurtainState, FanState, LightState, SocketState, TVCommands
+from devices.manager import DeviceType
 from tools import actions
 from tools.logger import logger
 from telegram import Update, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup

@@ -11,3 +11,6 @@ homeconnect==0.7.2
 yeelight==0.7.10
 python-telegram-bot==20.1
 google-nest-sdm==3.0.3
+pyelectroluxocp==0.0.11
+isodate==0.6.1
+apscheduler==3.10.4

@@ -28,6 +28,16 @@ class LightInterface(SwitchInterface):
 class SocketInterface(SwitchInterface):
     pass
 
+class CameraInterface(object):
+    def get_events(self, start_time, end_time):
+        raise NotImplemented()
+
+    def download_event_by_time(self, start_time, end_time):
+        raise NotImplemented()
+
+
+class DoorbellInterface(CameraInterface):
+    pass
 
 class HeaterInterface(object):
     def turn_on(self, timer=None):

@@ -33,5 +33,5 @@ class AEGConnection(Connection):
         await self._aeg_api.execute_appliance_command(appliance_id, command_dict)
 
     async def get_device_property(self, appliance_id, property_id):
-        device_state = await self._aeg_api.get_appliance_status(appliance_id, includeMetadata=False)
+        device_state = await self._aeg_api.get_appliance_state(appliance_id)
         return device_state["properties"]["reported"].get(property_id)

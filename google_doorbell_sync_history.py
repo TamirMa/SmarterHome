@@ -82,7 +82,7 @@ def main():
         tes.sync, 
         'interval', 
         minutes=REFRESH_EVERY_X_MINUTES, 
-        next_run_time=datetime.datetime.now() + datetime.timedelta(seconds=10)
+        next_run_time=datetime.datetime.now() + datetime.timedelta(minutes=2)
     )
     scheduler.start()
 

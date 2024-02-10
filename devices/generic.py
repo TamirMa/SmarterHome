@@ -28,6 +28,8 @@ class LightInterface(SwitchInterface):
 class SocketInterface(SwitchInterface):
     pass
 
+class DoorbellInterface(object):
+    pass
 
 class HeaterInterface(object):
     def turn_on(self, timer=None):

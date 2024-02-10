@@ -1,4 +1,4 @@
-import pytz
+import dateutil.parser
 import isodate
 import datetime
 from typing import Optional
@@ -58,7 +58,7 @@ async def retrieve_events(end_time : datetime.datetime, duration_minutes: int, d
             all_events.append(
                 CameraEvent(
                     device_id=device_id,
-                    start_time=datetime.datetime.fromisoformat(event["programDateTime"]),
+                    start_time=dateutil.parser.parse(event["programDateTime"]),
                     duration=min(datetime.timedelta(minutes=1), isodate.parse_duration(event["duration"]))
                 )
             )

@@ -12,6 +12,7 @@ from devices.manager import DeviceType
 
 from starlette_context import context
 from fastapi import APIRouter
+from fastapi.responses import Response
 from pydantic import BaseModel, validator
 
 camera_router = APIRouter()
@@ -29,10 +30,16 @@ class CameraEvent(BaseModel):
         return values.get('start_time')+ values.get('duration')
 
 @camera_router.get("/retrieve_events")
-async def retrieve_events(end_time : datetime.datetime, duration_minutes: int):
-
-    device_ids = context.devices.get_devices_by_type(device_type=DeviceType.Cameras)
-
+async def retrieve_events(end_time : datetime.datetime, duration_minutes: int, device_id : str = None):
+    if device_id != None:
+        device = context.devices.get_device_by_name(device_id)
+        if device == None or not isinstance(device, CameraInterface):
+            raise Exception(f"This is not a Camera device ({device_id})")
+        camera_device : CameraInterface = device
+        device_ids = [ camera_device ]
+    else:
+        device_ids = context.devices.get_devices_by_type(device_type=DeviceType.Cameras)
+    
     all_events = []
     for device_id in device_ids:
         camera_device : CameraInterface = context.devices.get_device_by_name(device_id)
@@ -51,33 +58,20 @@ async def retrieve_events(end_time : datetime.datetime, duration_minutes: int):
                 )
             )
     return all_events
-
-@camera_router.delete("/schedule")
-async def delete_all_scheduler():
-    # scheduler.remove_all_jobs()
-    # return "OK"
-    pass
-
-@camera_router.get("/schedule")
-async def schedule_shabat():
-    # return [
-    #     Task(
-    #         id=job.id,
-    #         handler=job.args[0],
-    #         name=job.name,
-    #         time=job.next_run_time,
-    #     )
-    #     for job in scheduler.get_jobs()
-    # ]
-    pass
     
-@camera_router.post("/schedule")
-async def schedule_shabat(tasks:list[CameraEvent]):
-    # for task in tasks:
-    #     if not shabat_actions.get(task.handler):
-    #         raise Exception(f"Couldn't find handler for task {task.handler}")
+@camera_router.post("/download")
+async def download_event(camera_event:CameraEvent):
+    device = context.devices.get_device_by_name(camera_event.device_id)
+    if device == None or not isinstance(device, CameraInterface):
+        raise Exception(f"This is not a Camera device ({camera_event.device_id})")
+    camera_device : CameraInterface = device
+    
+    video_bytes = camera_device.download_event_by_time(
+        camera_event.start_time,
+        camera_event.end_time
+    )
+    return Response(
+        video_bytes,
+        media_type="video/mp4"
+    )
 
-    # for task in tasks:
-    #     scheduler.add_job(execute_task, trigger='date', run_date=task.time, args=(task.handler, ), name=task.name, id=task.id, replace_existing=True)
-    # return "OK"
-    pass

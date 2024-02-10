@@ -1,3 +1,4 @@
+from enum import Enum
 import os
 import json
 
@@ -20,6 +21,19 @@ if CONNECTION_PARAMS_FILE == None:
 
 if DEVICES_FILE == None:
     raise Exception("Devices file is mandetory")
+
+class DeviceType(str, Enum):
+    ALL="all"
+    Sockets = "socket"
+    Lights = "light"
+    Ovens = "oven"
+    Dishwashers = "dishwasher"
+    ACs = "ac"
+    Curtains = "curtain"
+    Heaters = "heater"
+    Fans = "fan"
+    TVs = "tv"
+    Cameras = "camera"
 
 class DeviceManager(object):
 

@@ -10,6 +10,7 @@ from devices.manager import DeviceManager
 from server.dependencies import get_token_header, get_query_token
 from fastapi import FastAPI, Depends
 from server.control_router import control_router
+from server.camera_router import camera_router
 from server.shabat_router import shabat_router
 
 from starlette.middleware import Middleware
@@ -40,6 +41,14 @@ app.include_router(
 app.include_router(
     shabat_router,
     prefix="/shabat",
+    # dependencies=[Depends(get_token_header)],
+    # responses={418: {"description": "I'm a teapot"}},
+    responses={404: {"description": "Not found"}},
+)
+
+app.include_router(
+    camera_router,
+    prefix="/camera",
     # dependencies=[Depends(get_token_header)],
     # responses={418: {"description": "I'm a teapot"}},
     responses={404: {"description": "Not found"}},

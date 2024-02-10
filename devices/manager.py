@@ -1,3 +1,4 @@
+from enum import Enum
 import os
 import json
 
@@ -8,7 +9,8 @@ from connections.shelly import ShellyConnection
 from connections.smartthings import SmartThingsConnection
 from connections.tuya import TuyaConnection
 from connections.yeelight import YeelightConnection
-from devices.generic import AirConditionInterface, HeaterInterface, CurtainInterface, DishwasherInterface, FanInterface, LightInterface, OvenInterface, SocketInterface, TVInterface
+from connections.google import GoogleConnection
+from devices.generic import AirConditionInterface, CameraInterface, HeaterInterface, CurtainInterface, DishwasherInterface, FanInterface, LightInterface, OvenInterface, SocketInterface, TVInterface
 
 from tools.logger import logger
 
@@ -21,6 +23,19 @@ if CONNECTION_PARAMS_FILE == None:
 if DEVICES_FILE == None:
     raise Exception("Devices file is mandetory")
 
+class DeviceType(str, Enum):
+    ALL="all"
+    Sockets = "socket"
+    Lights = "light"
+    Ovens = "oven"
+    Dishwashers = "dishwasher"
+    ACs = "ac"
+    Curtains = "curtain"
+    Heaters = "heater"
+    Fans = "fan"
+    TVs = "tv"
+    Cameras = "camera"
+
 class DeviceManager(object):
 
     CONNECTIONS = [
@@ -31,6 +46,7 @@ class DeviceManager(object):
         HomeConnectConnection,
         SmartThingsConnection,
         YeelightConnection,
+        GoogleConnection,
     ]
 
     def __init__(self) -> None:
@@ -90,28 +106,30 @@ class DeviceManager(object):
     def get_devices_by_type(self, device_type=None):
         logger.debug (f"Getting devices list ({device_type})")
         device_class = None
-        if device_type == "light":
+        if device_type == DeviceType.Lights:
             device_class = LightInterface
-        elif device_type == "oven":
+        elif device_type == DeviceType.Ovens:
             device_class = OvenInterface
-        elif device_type == "dishwasher":
+        elif device_type == DeviceType.Dishwashers:
             device_class = DishwasherInterface
-        elif device_type == "tv":
+        elif device_type == DeviceType.TVs:
             device_class = TVInterface
-        elif device_type == "ac":
+        elif device_type == DeviceType.ACs:
             device_class = AirConditionInterface
-        elif device_type == "curtain":
+        elif device_type == DeviceType.Curtains:
             device_class = CurtainInterface
-        elif device_type == "socket":
+        elif device_type == DeviceType.Sockets:
             device_class = SocketInterface
-        elif device_type == "heater":
+        elif device_type == DeviceType.Heaters:
             device_class = HeaterInterface
-        elif device_type == "fan":
+        elif device_type == DeviceType.Fans:
             device_class = FanInterface
-        elif device_type == "all":
+        elif device_type == DeviceType.Cameras:
+            device_class = CameraInterface
+        elif device_type == DeviceType.ALL:
             device_type = None
         else:
-            raise Exception(f"Unknow device type {device_type}")
+            raise Exception(f"Unknown device type {device_type}")
 
         return [
             device_id

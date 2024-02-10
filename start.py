@@ -9,13 +9,13 @@ import subprocess
 
 SERVER_PORT = os.getenv("SERVER_PORT")
 
-def start_google_doorbell_subscriber():
+def start_google_doorbell_sync_history():
     logger.info(f'Starting Google Doorbell listener')
-    google_doorbell_subscriber_command = [
+    google_doorbell_sync_history_command = [
         'python3',
-        'google_doorbell_subscriber.py',
+        'google_doorbell_sync_history.py',
     ]
-    subprocess.run(google_doorbell_subscriber_command, check=True)
+    subprocess.run(google_doorbell_sync_history_command, check=True)
 
 def start_telegram_bot():
     logger.info(f'Starting telegram bot')
@@ -37,7 +37,7 @@ def start_fast_api():
     ]
     subprocess.run(uvicorn_command, check=True)
 
-google_nest_thread = threading.Thread(target=start_google_doorbell_subscriber)
+google_nest_thread = threading.Thread(target=start_google_doorbell_sync_history)
 telegram_bot_thread = threading.Thread(target=start_telegram_bot)
 fast_api_thread = threading.Thread(target=start_fast_api)
 

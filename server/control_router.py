@@ -3,6 +3,7 @@ from devices.aeg import AEGOven
 from devices.generic import AirConditionInterface, HeaterInterface, CurtainInterface, FanInterface, LightInterface, SocketInterface, SwitchInterface, TVInterface
 from devices.homeconnect import BoschDishwasher
 from devices.smartthings import SamsungTVDevice
+from devices.manager import DeviceType
 from starlette_context import context
 from fastapi import APIRouter
 
@@ -41,18 +42,6 @@ class TVCommands(str, Enum):
     ON = "On"
     OFF = "Off"
     # MUTE = "Mute"
-
-class DeviceType(str, Enum):
-    ALL="all"
-    Sockets = "socket"
-    Lights = "light"
-    Ovens = "oven"
-    Dishwashers = "dishwasher"
-    ACs = "ac"
-    Curtains = "curtain"
-    Heaters = "heater"
-    Fans = "fan"
-    TVs = "tv"
 
 @control_router.get("/all")
 async def get_all_devices(device_type:DeviceType):

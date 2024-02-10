@@ -140,3 +140,18 @@ def clear_tasks():
     return requests.delete(
         f"http://{SERVER_IP}:{SERVER_PORT}/shabat/schedule"
     )
+
+def get_all_camera_events(end_time, duration_minutes):
+    return requests.get(
+        f"http://{SERVER_IP}:{SERVER_PORT}/camera/retrieve_events",
+        params={
+            "end_time" : end_time,
+            "duration_minutes": duration_minutes,
+        }
+    ).json()
+
+def download_camera_event(camera_event):
+    return requests.post(
+        f"http://{SERVER_IP}:{SERVER_PORT}/camera/download",
+        data=json.dumps(camera_event)
+    ).content

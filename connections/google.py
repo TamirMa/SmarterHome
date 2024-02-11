@@ -5,13 +5,32 @@ import pytz
 import datetime
 import requests
 
-from glocaltokens.client import GLocalAuthenticationTokens
-
 from tools.logger import logger
 import xml.etree.ElementTree as ET
 from connections.connection import Connection
 
 from devices.google import NestDoorbellDevice
+
+import glocaltokens.client
+
+class GLocalAuthenticationTokensMultiService(glocaltokens.client.GLocalAuthenticationTokens):
+    def __init__(self, *args, **kwargs) -> None:
+        super(GLocalAuthenticationTokensMultiService, self).__init__(*args, **kwargs)
+
+        self._last_access_token_service = None
+    
+    def get_access_token(self, service=glocaltokens.client.ACCESS_TOKEN_SERVICE) -> str | None:
+        temp = glocaltokens.client.ACCESS_TOKEN_SERVICE
+
+        glocaltokens.client.ACCESS_TOKEN_SERVICE = service
+        if self._last_access_token_service != service:
+            self.access_token_date = None
+        res = super(GLocalAuthenticationTokensMultiService, self).get_access_token()
+        self._last_access_token_service = service
+
+        glocaltokens.client.ACCESS_TOKEN_SERVICE = temp
+
+        return res
 
 class GoogleConnection(Connection):
 
@@ -26,13 +45,13 @@ class GoogleConnection(Connection):
     def __init__(self, *args, **kwargs):
         super(GoogleConnection, self).__init__(*args, **kwargs)
         
-        if not (self._connection_params.get("master_token") and self._connection_params.get("username") and self._connection_params.get("password")):
-            raise Exception("Google master_token/username/password missing")
+        if not (self._connection_params.get("master_token") and self._connection_params.get("username")):
+            raise Exception("Google master_token/username missing")
         
-        self._google_auth = GLocalAuthenticationTokens(
+        self._google_auth = GLocalAuthenticationTokensMultiService(
             master_token=self._connection_params.get("master_token"), 
             username=self._connection_params.get("username"), 
-            password=self._connection_params.get("password"),
+            password="FAKE_PASSWORD",
         )
 
     def make_nest_get_request(self, device_id : str, url : str, params={}):
@@ -52,3 +71,15 @@ class GoogleConnection(Connection):
         )
         res.raise_for_status()
         return res.content
+
+    def get_nest_camera_device_ids(self):
+
+        homegraph_response = self._google_auth.get_homegraph()
+
+        # This one will list all your home devices
+        # One of them would be your Nest Camera, let's find it
+        return [
+            device.device_info.agent_info.unique_id
+            for device in homegraph_response.home.devices
+            if "action.devices.traits.CameraStream" in device.traits and "Nest" in device.hardware.model
+        ]

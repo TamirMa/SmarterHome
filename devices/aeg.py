@@ -55,19 +55,19 @@ class AEGOven(GenericDevice, OvenInterface):
         if not program_code:
             raise Exception(f"Couldn't find the program '{program_name}'")
         
-        if await self._connection.get_device_property(self._device_id, "program") != program_code:
-            await self._connection.send_command(self._device_id, {"program" : program_code})
+        # if await self._connection.get_device_property(self._device_id, "program") != program_code:
+        await self._connection.send_command(self._device_id, {"program" : program_code})
     
     async def set_temperature(self, temperature):
-        if await self._connection.get_device_property(self._device_id, "targetTemperatureC") != temperature:
-            await self._connection.send_command(self._device_id, {"targetTemperatureC" : temperature})
+        # if await self._connection.get_device_property(self._device_id, "targetTemperatureC") != temperature:
+        await self._connection.send_command(self._device_id, {"targetTemperatureC" : temperature})
 
     
     async def light_on(self):
-        if not await self._connection.get_device_property(self._device_id, "cavityLight"):
-            await self._connection.send_command(self._device_id, {"cavityLight": "ON"})
+        # if not await self._connection.get_device_property(self._device_id, "cavityLight"):
+        await self._connection.send_command(self._device_id, {"cavityLight": "ON"})
         
     async def light_off(self):
-        if await self._connection.get_device_property(self._device_id, "cavityLight"):
-            await self._connection.send_command(self._device_id, {"cavityLight": "OFF"})
+        # if await self._connection.get_device_property(self._device_id, "cavityLight"):
+        await self._connection.send_command(self._device_id, {"cavityLight": "OFF"})
     

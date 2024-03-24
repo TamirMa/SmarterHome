@@ -40,7 +40,10 @@ class TelegramEventsSync(object):
     
         all_recent_camera_events = actions.get_all_camera_events(
             end_time = pytz.timezone("Israel").localize(datetime.datetime.now()),
-            duration_minutes=3 * 60 # This is the maxmimum time Google is saving my videos
+            # 2.5 hours, a bit less than the maxmimum time of what Google 
+            # is saving the videos (3 hours is risky because they can cut 
+            # your videos and change the start time == event_id)
+            duration_minutes=150 
         )
 
         logger.info(f"Received {len(all_recent_camera_events)} camera events")

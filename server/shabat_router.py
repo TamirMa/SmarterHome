@@ -1,4 +1,6 @@
 import datetime
+import json
+import os
 from typing import Optional
 
 import shabat.times
@@ -14,26 +16,29 @@ scheduler.start()
 
 shabat_router = APIRouter()
 
+SHABBAT_CONFIG_FILE = os.getenv("SHABBAT_CONFIG_FILE")
+
 
 shabat_actions = {
-    "shabat_entrance":          ("Entrance",            shabat.actions.shabat_entrance,        None,                   datetime.timedelta(minutes=-5),             None,                   None,    ),
-    "prepare_to_dinner":        ("Start Oven (Dinner)", shabat.actions.prepare_to_dinner,      None,                   datetime.timedelta(minutes=30),             None,                   None,    ),
-    "shabat_dinner":            ("Dinner",              shabat.actions.shabat_dinner,          None,                   datetime.timedelta(minutes=45),             None,                   None,    ),
-    "post_dinner":              ("Stop Oven (Dinner)",  shabat.actions.post_dinner,            None,                   datetime.timedelta(hours=3, minutes=45),    None,                   None,    ),
-    "prepare_to_sleep":         ("Prepare to Sleep",    shabat.actions.prepare_to_sleep,       datetime.time(23,30),   None,                                       None,                   None,    ),
-    "start_dishwasher":         ("Dishwasher",          shabat.actions.start_dishwasher,       None,                   None,                                       datetime.time(0,15),    None,    ),
-    "shutdown_livingroom":      ("Shutdown Living Room",shabat.actions.shutdown_livingroom,    None,                   None,                                       datetime.time(1,30),    None,    ),
-    "shabat_morning":           ("Morning",             shabat.actions.shabat_morning,         None,                   None,                                       datetime.time(8,0),     None,    ),
-    "prepare_to_lunch_plata":   ("Start Plata (Lunch)", shabat.actions.prepare_to_lunch_plata, None,                   None,                                       datetime.time(11,30),   None,    ),
-    "prepare_to_lunch_oven":    ("Start Oven (Lunch)",  shabat.actions.prepare_to_lunch_oven,  None,                   None,                                       datetime.time(13,30),   None,    ),
-    "shabat_lunch":             ("Lunch",               shabat.actions.shabat_lunch,           None,                   None,                                       datetime.time(14,0),    None,    ),
-    "post_lunch":               ("Stop Oven & Plata",   shabat.actions.post_lunch,             None,                   None,                                       datetime.time(15,30),   None,    ),
-    "shabat_before_exit":       ("Twilight Time",       shabat.actions.shabat_before_exit,     None,                   None,                                       None,                   datetime.timedelta(hours=-2), ),
-    }
+    "shabat_entrance":          shabat.actions.shabat_entrance,        
+    "prepare_to_dinner":        shabat.actions.prepare_to_dinner,      
+    "shabat_dinner":            shabat.actions.shabat_dinner,          
+    "post_dinner":              shabat.actions.post_dinner,            
+    "prepare_to_sleep":         shabat.actions.prepare_to_sleep,       
+    "start_dishwasher":         shabat.actions.start_dishwasher,       
+    "shutdown_livingroom":      shabat.actions.shutdown_livingroom,    
+    "shabat_morning":           shabat.actions.shabat_morning,         
+    "prepare_to_lunch_plata":   shabat.actions.prepare_to_lunch_plata, 
+    "prepare_to_lunch_oven":    shabat.actions.prepare_to_lunch_oven,  
+    "shabat_lunch":             shabat.actions.shabat_lunch,           
+    "post_lunch":               shabat.actions.post_lunch,             
+    "shabat_before_exit":       shabat.actions.shabat_before_exit,
+}
 
 class Task(BaseModel):
     id: str
-    handler: str
+    handler_id: str
+    commands: str
     name: str
     time: datetime.datetime
 
@@ -63,28 +68,39 @@ async def generate_tasks():
 
     """
 
+    with open(SHABBAT_CONFIG_FILE, "r") as shabbat_config_file:
+        shabbat_config = json.load(shabbat_config_file)
+
     tasks = []
     shabat_times = shabat.times.get_shabat_times()
 
     for shabat_day in shabat_times:
         shabat_start = shabat_day["start"]
-        shabat_end   = shabat_day["end"]
-        for action_name, action_params in shabat_actions.items():
-            name, _, start_abs, start_dyn, end_abs, end_dyn = action_params
+        # shabat_end   = shabat_day["end"]
+
+        for action in shabbat_config.get("actions", []):
+            action_id = action["id"]
+            name = action["description"]
+            commands = action.get("commands", [])
             
-            if start_abs:
-                task_time = datetime.datetime.combine(shabat_start.date(), start_abs)
-            elif start_dyn:
-                task_time = shabat_start + start_dyn
-            elif end_abs:
-                task_time = datetime.datetime.combine(shabat_end.date(), end_abs)
-            elif end_dyn:
-                task_time = shabat_end + end_dyn
+            if action.get("absolute_time"):
+                absolute_start_time = action.get("absolute_time")
+                # If the absolute time is before shabbat entrance, this time is on the second day
+                if absolute_start_time < shabat_start.time():
+                    task_time = datetime.datetime.combine(shabat_start.date(), absolute_start_time)
+                else: # absolute_start_time >= shabat_start.time()
+                    task_time = datetime.datetime.combine(shabat_start.date(), absolute_start_time)
+            elif action.get("relative_time"):
+                relative_start_time = action.get("relative_time")
+                task_time = shabat_start + relative_start_time
+            else:
+                raise Exception(f"Shabbat Action {action_id} doesn't define a start time (relative or absolute)")
 
             tasks.append(
                 Task(
-                    id=f"{action_name}_{shabat_start.strftime('%Y_%m_%d')}", 
-                    handler=action_name,
+                    id=f"{action_id}_{shabat_start.strftime('%Y_%m_%d_%H_%M_%S')}", 
+                    handler_id=action_id,
+                    commands=commands,
                     name=name, 
                     time=task_time
                 )
@@ -113,11 +129,11 @@ async def schedule_shabat():
 @shabat_router.post("/schedule")
 async def schedule_shabat(tasks:list[Task]):
     for task in tasks:
-        if not shabat_actions.get(task.handler):
-            raise Exception(f"Couldn't find handler for task {task.handler}")
+        if not shabat_actions.get(task.handler_id):
+            raise Exception(f"Couldn't find handler for task {task.handler_id}")
 
     for task in tasks:
-        scheduler.add_job(execute_task, trigger='date', run_date=task.time, args=(task.handler, ), name=task.name, id=task.id, replace_existing=True)
+        scheduler.add_job(execute_task, trigger='date', run_date=task.time, args=(task.handler_id, ), name=task.name, id=task.id, replace_existing=True)
     return "OK"
 
 def execute_task(task_handler):
@@ -126,7 +142,7 @@ def execute_task(task_handler):
     if not task_handler:
         logger.error(f"Couldn't find handler for task {task_handler}")
 
-    method = task_handler[1]
+    method = task_handler
 
     method()
 

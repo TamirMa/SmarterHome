@@ -1,3 +1,4 @@
+import time
 import datetime
 import json
 import os
@@ -19,25 +20,8 @@ shabat_router = APIRouter()
 SHABBAT_CONFIG_FILE = os.getenv("SHABBAT_CONFIG_FILE")
 
 
-shabat_actions = {
-    "shabat_entrance":          shabat.actions.shabat_entrance,        
-    "prepare_to_dinner":        shabat.actions.prepare_to_dinner,      
-    "shabat_dinner":            shabat.actions.shabat_dinner,          
-    "post_dinner":              shabat.actions.post_dinner,            
-    "prepare_to_sleep":         shabat.actions.prepare_to_sleep,       
-    "start_dishwasher":         shabat.actions.start_dishwasher,       
-    "shutdown_livingroom":      shabat.actions.shutdown_livingroom,    
-    "shabat_morning":           shabat.actions.shabat_morning,         
-    "prepare_to_lunch_plata":   shabat.actions.prepare_to_lunch_plata, 
-    "prepare_to_lunch_oven":    shabat.actions.prepare_to_lunch_oven,  
-    "shabat_lunch":             shabat.actions.shabat_lunch,           
-    "post_lunch":               shabat.actions.post_lunch,             
-    "shabat_before_exit":       shabat.actions.shabat_before_exit,
-}
-
 class Task(BaseModel):
     id: str
-    handler_id: str
     commands: str
     name: str
     time: datetime.datetime
@@ -99,7 +83,6 @@ async def generate_tasks():
             tasks.append(
                 Task(
                     id=f"{action_id}_{shabat_start.strftime('%Y_%m_%d_%H_%M_%S')}", 
-                    handler_id=action_id,
                     commands=commands,
                     name=name, 
                     time=task_time
@@ -129,23 +112,27 @@ async def schedule_shabat():
 @shabat_router.post("/schedule")
 async def schedule_shabat(tasks:list[Task]):
     for task in tasks:
-        if not shabat_actions.get(task.handler_id):
-            raise Exception(f"Couldn't find handler for task {task.handler_id}")
-
-    for task in tasks:
-        scheduler.add_job(execute_task, trigger='date', run_date=task.time, args=(task.handler_id, ), name=task.name, id=task.id, replace_existing=True)
+        scheduler.add_job(execute_task, trigger='date', run_date=task.time, args=(task.commands, ), name=task.name, id=task.id, replace_existing=True)
     return "OK"
 
-def execute_task(task_handler):
+def execute_task(commands):
 
-    task_handler = shabat_actions.get(task_handler)
-    if not task_handler:
-        logger.error(f"Couldn't find handler for task {task_handler}")
-
-    method = task_handler
-
-    method()
+    shabat.actions.run_action_commands(commands)
 
 @shabat_router.get("/times")
 async def get_shabat_times():
     return shabat.times.get_shabat_times()
+
+def test_scheduler():
+
+    with open(SHABBAT_CONFIG_FILE, "r") as shabbat_config_file:
+        shabbat_config = json.load(shabbat_config_file)
+
+    for action in shabbat_config.get("actions", []):
+        action_id = action["id"]
+        name = action["description"]
+        commands = action.get("commands", [])
+
+        logger.info(f"Testing shabbat_command {action_id} ({name})")
+        shabat.actions.run_action_commands(commands, test=True)
+        time.sleep(10)

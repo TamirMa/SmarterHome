@@ -59,7 +59,7 @@ async def retrieve_events(end_time : datetime.datetime, duration_minutes: int, d
                 CameraEvent(
                     device_id=device_id,
                     start_time=dateutil.parser.parse(event["programDateTime"]),
-                    duration=min(datetime.timedelta(minutes=1), isodate.parse_duration(event["duration"]))
+                    duration=isodate.parse_duration(event["duration"])
                 )
             )
     return all_events

@@ -80,7 +80,7 @@ def get_shabat_times():
     res = get_shabat_times_online(location=LOCATION)
     for item in res["items"]:
         if item["category"] == "candles":
-            if len(times) > 0:
+            if len(times) > 0 and times[-1]["end"] is None:
                 times[-1]["end"] = datetime.datetime.strptime(item["date"], "%Y-%m-%dT%H:%M:%S%z").replace(tzinfo=None)
             times.append({
                 "start": datetime.datetime.strptime(item["date"], "%Y-%m-%dT%H:%M:%S%z").replace(tzinfo=None),
@@ -88,7 +88,10 @@ def get_shabat_times():
             })
         if item["category"] == "havdalah":
             times[-1]["end"] = datetime.datetime.strptime(item["date"], "%Y-%m-%dT%H:%M:%S%z").replace(tzinfo=None)
-            break
-    return times
+    # Filter the time-sections that are in the past
+    return [time for time in times if time["end"] > datetime.datetime.now()]
 
 
+
+if __name__ == "__main__":
+    print (get_shabat_times())

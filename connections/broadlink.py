@@ -1,6 +1,5 @@
 import base64
 from enum import Enum
-from tkinter import COMMAND
 from connections.connection import Connection
 from devices.broadlink import BroadlinkFanDevice
 

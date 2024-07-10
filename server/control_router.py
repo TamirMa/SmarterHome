@@ -47,7 +47,7 @@ class TVCommands(str, Enum):
 async def get_all_devices_by_type(device_type:DeviceType):
     return context.devices.get_devices_by_type(device_type=device_type)
 
-@control_router.get("/tags/{tag}/devices")
+@control_router.get("/tags/tag/{tag}/devices")
 async def get_all_devices_by_tag(tag):
     return context.devices.get_devices_by_tag(tag=tag)
 

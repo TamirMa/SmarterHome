@@ -163,5 +163,5 @@ def get_all_tags():
 
 def get_devices_of_tag(tag):
     return requests.get(
-        f"http://{SERVER_IP}:{SERVER_PORT}/devices/tags/{tag}"
+        f"http://{SERVER_IP}:{SERVER_PORT}/devices/tags/tag/{tag}/devices"
     ).json()

@@ -1,15 +1,19 @@
 from enum import Enum
 
 class GenericDevice(object):
-    def __init__(self, connection, device_id, sub_device_id=None, linked_device=None, hidden=False):
+    def __init__(self, connection, device_id, sub_device_id=None, linked_device=None, hidden=False, tags=[]):
         self._connection = connection
         self._device_id = device_id
         self._sub_device_id = sub_device_id
         self._linked_device = linked_device
         self._hidden = hidden
+        self._tags = tags
 
     def is_hidden(self):
         return self._hidden
+
+    def get_tags(self):
+        return self._tags[:]
     
 
 class SwitchInterface(object):

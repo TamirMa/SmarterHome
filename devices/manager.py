@@ -1,3 +1,4 @@
+import itertools
 from enum import Enum
 import os
 import json
@@ -102,6 +103,23 @@ class DeviceManager(object):
             return
 
         return device
+
+    def get_all_tags(self):
+        return set(
+            itertools.chain.from_iterable(
+                [
+                    [ tag.lower() for tag in device.get_tags() ]
+                    for device_id, device in self._devices.items()
+                ]
+            )
+        ) 
+
+    def get_devices_by_tag(self, tag):
+        return [
+            device_id
+            for device_id, device in self._devices.items()
+            if (tag.lower() in device.get_tags()) and (not device.is_hidden())
+        ]
 
     def get_devices_by_type(self, device_type=None):
         logger.debug (f"Getting devices list ({device_type})")

@@ -31,6 +31,37 @@ async def hello(update: Update, context: CallbackContext):
     
     await update.message.reply_text(f'Hello, {update.message.from_user.first_name}!')
 
+
+async def handle_device_tags_init(update: Update, context: CallbackContext):
+    await go_away(update, context)
+
+    device_type = update.message.text[1:]
+    logger.info(f'{device_type} command received')
+
+    # Create buttons to slect language:
+    tags = actions.get_all_tags()
+    print (tags)
+    # Create initial message:
+    message = f"Please choose a {device_type} from the list:"
+
+    reply_markup = InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton(tag, callback_data=tag)
+            ]
+            for tag in sorted(tags)
+        ] + 
+        [
+            [
+                InlineKeyboardButton("Ignore", callback_data="ignore")
+            ]
+        ]
+    )
+
+    context.user_data['waiting_for_device'] = "tags"
+    
+    await update.message.reply_text(message, reply_markup=reply_markup)
+
 async def handle_device_init(update: Update, context: CallbackContext):
     await go_away(update, context)
 
@@ -70,7 +101,38 @@ async def handle_device_command(update: Update, context: CallbackContext):
 
     if option == "ignore":
         await query.edit_message_text(text=f'Ignored')
-    
+    elif context.user_data.get('waiting_for_device') == 'tags':
+        tags = actions.get_all_tags()
+        tag = option
+
+        if tag not in tags:
+            await query.edit_message_text(text=f'Couldn\'t find tag')
+        else:
+            devices_of_tag = actions.get_devices_of_tag(tag)
+
+            intersect = lambda x,y: list(set(x) & set(y))
+            light_devices = intersect(devices_of_tag, actions.get_all_devices(DeviceType.Lights))
+            socket_devices = intersect(devices_of_tag, actions.get_all_devices(DeviceType.Sockets))
+            fan_devices = intersect(devices_of_tag, actions.get_all_devices(DeviceType.Fans))
+            heater_devices = intersect(devices_of_tag, actions.get_all_devices(DeviceType.Heaters))
+            ac_devices = intersect(devices_of_tag, actions.get_all_devices(DeviceType.ACs))
+            tv_devices = intersect(devices_of_tag, actions.get_all_devices(DeviceType.TVs))
+
+            for device in light_devices:
+                actions.change_light_state(device, LightState.OFF)
+            for device in socket_devices:
+                actions.change_socket_state(device, SocketState.OFF)
+            for device in fan_devices:
+                actions.change_fan_state(device, FanState.STOP)
+            for device in ac_devices:
+                actions.turn_off_ac(device)
+            for device in heater_devices:
+                actions.turn_off_heater(device)
+            for device in tv_devices:
+                actions.apply_tv_command(device, TVCommands.OFF)
+
+            await query.edit_message_text(text=f'Turned them all off')
+
     elif context.user_data.get('waiting_for_device') == 'all':
         del context.user_data['waiting_for_device']
         if option == "off":
@@ -385,6 +447,7 @@ def main():
     application.add_handler(CommandHandler(DeviceType.Fans, handle_device_init))
     application.add_handler(CommandHandler(DeviceType.Heaters, handle_device_init))
     application.add_handler(CommandHandler(DeviceType.ACs, handle_device_init))
+    application.add_handler(CommandHandler("tags", handle_device_tags_init))
     application.add_handler(CommandHandler("all", handle_all_command))
     application.add_handler(CommandHandler("shabat", handle_shabat_command))
     application.add_handler(CommandHandler("tasks", handle_tasks_command))

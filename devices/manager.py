@@ -108,7 +108,7 @@ class DeviceManager(object):
         return set(
             itertools.chain.from_iterable(
                 [
-                    [ tag.lower() for tag in device.get_tags() ]
+                    [ tags for tags in device.get_tags() ]
                     for device_id, device in self._devices.items()
                 ]
             )

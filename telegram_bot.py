@@ -40,7 +40,7 @@ async def handle_device_tags_init(update: Update, context: CallbackContext):
 
     # Create buttons to slect language:
     tags = actions.get_all_tags()
-    print (tags)
+    
     # Create initial message:
     message = f"Please choose a {device_type} from the list:"
 

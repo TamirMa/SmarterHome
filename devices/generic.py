@@ -7,7 +7,7 @@ class GenericDevice(object):
         self._sub_device_id = sub_device_id
         self._linked_device = linked_device
         self._hidden = hidden
-        self._tags = tags
+        self._tags = [ tag.lower() for tag in tags ]
 
     def is_hidden(self):
         return self._hidden

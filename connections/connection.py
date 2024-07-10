@@ -34,7 +34,8 @@ class Connection(object):
                 sub_device_id=
                 device_definition.get("sub_device_id"), 
                 linked_device=linked_device,
-                hidden=device_definition.get("hidden")
+                hidden=device_definition.get("hidden"),
+                tags=device_definition.get("tags", [])
             )
         
         

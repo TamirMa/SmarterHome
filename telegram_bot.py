@@ -131,34 +131,7 @@ async def handle_device_command(update: Update, context: CallbackContext):
             for device in tv_devices:
                 actions.apply_tv_command(device, TVCommands.OFF)
 
-            await query.edit_message_text(text=f'Turned them all off')
-
-    elif context.user_data.get('waiting_for_device') == 'all':
-        del context.user_data['waiting_for_device']
-        if option == "off":
-            light_devices = actions.get_all_devices(DeviceType.Lights)
-            socket_devices = actions.get_all_devices(DeviceType.Sockets)
-            fan_devices = actions.get_all_devices(DeviceType.Fans)
-            heater_devices = actions.get_all_devices(DeviceType.Heaters)
-            ac_devices = actions.get_all_devices(DeviceType.ACs)
-            tv_devices = actions.get_all_devices(DeviceType.TVs)
-
-            for device in light_devices:
-                actions.change_light_state(device, LightState.OFF)
-            for device in socket_devices:
-                actions.change_socket_state(device, SocketState.OFF)
-            for device in fan_devices:
-                actions.change_fan_state(device, FanState.STOP)
-            for device in ac_devices:
-                actions.turn_off_ac(device)
-            for device in heater_devices:
-                actions.turn_off_heater(device)
-            for device in tv_devices:
-                actions.apply_tv_command(device, TVCommands.OFF)
-
-            await query.edit_message_text(text=f'Turned them all off')
-        else:
-            await query.edit_message_text(text=f'Cancelled')
+            await query.edit_message_text(text=f'Turned "{tag}" devices off')
 
     elif context.user_data.get('waiting_for_device') == 'shabat':
         del context.user_data['waiting_for_device']
@@ -331,28 +304,6 @@ async def handle_device_command(update: Update, context: CallbackContext):
             await query.edit_message_text(text=f'Error')
                 
 
-            
-async def handle_all_command(update: Update, context: CallbackContext):
-    await go_away(update, context)
-
-    logger.info(f'all command received')
-
-    # Create initial message:
-    message = "What would you like to do with the lights?"
-
-    reply_markup = InlineKeyboardMarkup(
-        [
-            [
-                InlineKeyboardButton("Off", callback_data="off"),
-                InlineKeyboardButton("Cancel", callback_data="cancel")
-            ],
-        ]
-    )
-
-    context.user_data['waiting_for_device'] = 'all'
-    
-    await update.message.reply_text(message, reply_markup=reply_markup)
-        
 async def handle_shabat_command(update: Update, context: CallbackContext):
     await go_away(update, context)
 

@@ -9,6 +9,10 @@ from fastapi import APIRouter
 
 control_router = APIRouter()
 
+class OnOffDevice(str, Enum):
+    ON = "on"
+    OFF = "off"
+    
 class LightState(str, Enum):
     ON = "on"
     OFF = "off"
@@ -37,6 +41,7 @@ class FanState(str, Enum):
     FAN2 = "fan2"
     FAN3 = "fan3"
     STOP = "stop"
+    START = "start"
 
 class TVCommands(str, Enum):
     ON = "On"
@@ -118,6 +123,8 @@ async def change_fan_state(device_id, fan_state: FanState):
         fan.start_fan3()
     elif fan_state == FanState.STOP:
         fan.stop_fan()
+    elif fan_state == FanState.START:
+        fan.start_fan2()
     elif fan_state == FanState.LIGHT_TOGGLE:
         fan.toggle()
     elif fan_state == FanState.LIGHT_ON:

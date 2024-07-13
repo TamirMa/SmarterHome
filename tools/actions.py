@@ -125,6 +125,11 @@ def generate_shabat_tasks():
         f"http://{SERVER_IP}:{SERVER_PORT}/shabat/generate_tasks"
     ).json()
 
+def test_shabat_scheduler():
+    return requests.post(
+        f"http://{SERVER_IP}:{SERVER_PORT}/shabat/test"
+    ).json()
+
 def get_tasks():
     return requests.get(
         f"http://{SERVER_IP}:{SERVER_PORT}/shabat/schedule"

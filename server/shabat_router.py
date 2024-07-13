@@ -122,6 +122,7 @@ def execute_task(commands):
 async def get_shabat_times():
     return shabat.times.get_shabat_times()
 
+@shabat_router.post("/test")
 def test_scheduler():
 
     with open(SHABBAT_CONFIG_FILE, "r") as shabbat_config_file:
@@ -135,3 +136,4 @@ def test_scheduler():
         logger.info(f"Testing shabbat_command {action_id} ({name})")
         shabat.actions.run_action_commands(commands, test=True)
         time.sleep(10)
+    return "Success"

@@ -12,6 +12,7 @@ from fastapi import FastAPI, Depends
 from server.control_router import control_router
 from server.camera_router import camera_router
 from server.shabat_router import shabat_router
+from server.tags_router import tags_router
 
 from starlette.middleware import Middleware
 from starlette_context import context
@@ -33,6 +34,14 @@ app = FastAPI(
 app.include_router(
     control_router,
     prefix="/devices",
+    # dependencies=[Depends(get_token_header)],
+    # responses={418: {"description": "I'm a teapot"}},
+    responses={404: {"description": "Not found"}},
+)
+
+app.include_router(
+    tags_router,
+    prefix="/tags",
     # dependencies=[Depends(get_token_header)],
     # responses={418: {"description": "I'm a teapot"}},
     responses={404: {"description": "Not found"}},

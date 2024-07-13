@@ -108,29 +108,7 @@ async def handle_device_command(update: Update, context: CallbackContext):
         if tag not in tags:
             await query.edit_message_text(text=f'Couldn\'t find tag')
         else:
-            devices_of_tag = actions.get_devices_of_tag(tag)
-
-            intersect = lambda x,y: list(set(x) & set(y))
-            light_devices = intersect(devices_of_tag, actions.get_all_devices(DeviceType.Lights))
-            socket_devices = intersect(devices_of_tag, actions.get_all_devices(DeviceType.Sockets))
-            fan_devices = intersect(devices_of_tag, actions.get_all_devices(DeviceType.Fans))
-            heater_devices = intersect(devices_of_tag, actions.get_all_devices(DeviceType.Heaters))
-            ac_devices = intersect(devices_of_tag, actions.get_all_devices(DeviceType.ACs))
-            tv_devices = intersect(devices_of_tag, actions.get_all_devices(DeviceType.TVs))
-
-            for device in light_devices:
-                actions.change_light_state(device, LightState.OFF)
-            for device in socket_devices:
-                actions.change_socket_state(device, SocketState.OFF)
-            for device in fan_devices:
-                actions.change_fan_state(device, FanState.STOP)
-            for device in ac_devices:
-                actions.turn_off_ac(device)
-            for device in heater_devices:
-                actions.turn_off_heater(device)
-            for device in tv_devices:
-                actions.apply_tv_command(device, TVCommands.OFF)
-
+            actions.apply_tag_state(tag)
             await query.edit_message_text(text=f'Turned "{tag}" devices off')
 
     elif context.user_data.get('waiting_for_device') == 'shabat':

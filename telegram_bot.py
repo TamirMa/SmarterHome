@@ -374,7 +374,6 @@ def main():
     application.add_handler(CommandHandler(DeviceType.Heaters, handle_device_init))
     application.add_handler(CommandHandler(DeviceType.ACs, handle_device_init))
     application.add_handler(CommandHandler("tags", handle_device_tags_init))
-    application.add_handler(CommandHandler("all", handle_all_command))
     application.add_handler(CommandHandler("shabat", handle_shabat_command))
     application.add_handler(CommandHandler("tasks", handle_tasks_command))
     application.add_handler(CommandHandler("test", handle_test_shabat_command))

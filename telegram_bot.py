@@ -1,12 +1,9 @@
 from dotenv import load_dotenv
 
-from devices.generic import LightInterface
-
 load_dotenv()  # take environment variables from .env.
 
 import re
 import os
-import shabat.actions
 from server.control_router import CurtainState, FanState, LightState, SocketState, TVCommands
 from devices.manager import DeviceType
 from tools import actions
@@ -338,7 +335,7 @@ async def handle_test_shabat_command(update: Update, context: CallbackContext):
 
     # Create initial message:
 
-    if shabat.actions.test_scheduler():
+    if actions.test_shabat_scheduler():
         message = "Tested shabat tasks"
     else:
         message = "Exception when testing shabat tasks, please check logs"

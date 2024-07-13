@@ -44,7 +44,7 @@ async def handle_device_tags_init(update: Update, context: CallbackContext):
     reply_markup = InlineKeyboardMarkup(
         [
             [
-                InlineKeyboardButton(tag, callback_data=tag)
+                InlineKeyboardButton(tag.capitalize(), callback_data=tag)
             ]
             for tag in sorted(tags)
         ] + 

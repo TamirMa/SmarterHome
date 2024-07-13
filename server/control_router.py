@@ -9,6 +9,10 @@ from fastapi import APIRouter
 
 control_router = APIRouter()
 
+class OnOffDevice(str, Enum):
+    ON = "on"
+    OFF = "off"
+    
 class LightState(str, Enum):
     ON = "on"
     OFF = "off"
@@ -37,6 +41,7 @@ class FanState(str, Enum):
     FAN2 = "fan2"
     FAN3 = "fan3"
     STOP = "stop"
+    START = "start"
 
 class TVCommands(str, Enum):
     ON = "On"
@@ -46,15 +51,6 @@ class TVCommands(str, Enum):
 @control_router.get("/all")
 async def get_all_devices_by_type(device_type:DeviceType):
     return context.devices.get_devices_by_type(device_type=device_type)
-
-@control_router.get("/tags/tag/{tag}/devices")
-async def get_all_devices_by_tag(tag):
-    return context.devices.get_devices_by_tag(tag=tag)
-
-@control_router.get("/tags/all")
-async def get_all_tags():
-    return context.devices.get_all_tags()
-
 
 @control_router.get("/light/{device_id}/state")
 async def get_light_state(device_id):
@@ -66,7 +62,7 @@ async def get_light_state(device_id):
 
 @control_router.get("/light/{device_id}")
 @control_router.post("/light/{device_id}")
-async def change_light_state_post(device_id, light_state: LightState):
+async def change_light_state(device_id, light_state: LightState):
     device = context.devices.get_device_by_name(device_id)
     if device == None or not isinstance(device, LightInterface):
         raise Exception(f"This is not a light device ({device_id})")
@@ -80,7 +76,7 @@ async def change_light_state_post(device_id, light_state: LightState):
         raise Exception(f"Invalid state for light {light_state}")
 
 @control_router.get("/light/{device_id}/toggle")
-async def change_light_state_get(device_id):
+async def change_light_state_toggler(device_id):
     device = context.devices.get_device_by_name(device_id)
     if device == None or not isinstance(device, LightInterface):
         raise Exception(f"This is not a light device ({device_id})")
@@ -92,7 +88,7 @@ async def change_light_state_get(device_id):
         light.turn_on()
     
 @control_router.get("/socket/{device_id}/state")
-async def get_socket_state_get(device_id):
+async def get_socket_state(device_id):
     device = context.devices.get_device_by_name(device_id)
     if device == None or not isinstance(device, SocketInterface):
         raise Exception(f"This is not a socket device ({device_id})")
@@ -100,7 +96,7 @@ async def get_socket_state_get(device_id):
     return socket.is_on()
 
 @control_router.post("/socket/{device_id}")
-async def change_socket_state_post(device_id, socket_state: SocketState):
+async def change_socket_state(device_id, socket_state: SocketState):
     device = context.devices.get_device_by_name(device_id)
     if device == None or not isinstance(device, SocketInterface):
         raise Exception(f"This is not a socket device ({device_id})")
@@ -127,6 +123,8 @@ async def change_fan_state(device_id, fan_state: FanState):
         fan.start_fan3()
     elif fan_state == FanState.STOP:
         fan.stop_fan()
+    elif fan_state == FanState.START:
+        fan.start_fan2()
     elif fan_state == FanState.LIGHT_TOGGLE:
         fan.toggle()
     elif fan_state == FanState.LIGHT_ON:
@@ -137,7 +135,7 @@ async def change_fan_state(device_id, fan_state: FanState):
         raise Exception(f"Invalid state for fan {fan_state}")
 
 @control_router.post("/heater/{device_id}")
-async def change_heater_state_post(device_id, 
+async def change_heater_state(device_id, 
                                 heater_state: HeaterState,
                                 timer : int = None, 
                                 ):

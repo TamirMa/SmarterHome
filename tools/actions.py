@@ -158,10 +158,15 @@ def download_camera_event(camera_event):
 
 def get_all_tags():
     return requests.get(
-        f"http://{SERVER_IP}:{SERVER_PORT}/devices/tags/all"
+        f"http://{SERVER_IP}:{SERVER_PORT}/tags/all"
     ).json()
 
 def get_devices_of_tag(tag):
     return requests.get(
-        f"http://{SERVER_IP}:{SERVER_PORT}/devices/tags/tag/{tag}/devices"
+        f"http://{SERVER_IP}:{SERVER_PORT}/tags/{tag}/devices"
+    ).json()
+
+def apply_tag_state(tag):
+    return requests.get(
+        f"http://{SERVER_IP}:{SERVER_PORT}/tags/{tag}/applystate"
     ).json()

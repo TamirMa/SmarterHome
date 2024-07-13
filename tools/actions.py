@@ -155,3 +155,13 @@ def download_camera_event(camera_event):
         f"http://{SERVER_IP}:{SERVER_PORT}/camera/download",
         data=json.dumps(camera_event)
     ).content
+
+def get_all_tags():
+    return requests.get(
+        f"http://{SERVER_IP}:{SERVER_PORT}/devices/tags/all"
+    ).json()
+
+def get_devices_of_tag(tag):
+    return requests.get(
+        f"http://{SERVER_IP}:{SERVER_PORT}/devices/tags/tag/{tag}/devices"
+    ).json()

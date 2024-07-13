@@ -48,8 +48,17 @@ class TVCommands(str, Enum):
     # MUTE = "Mute"
 
 @control_router.get("/all")
-async def get_all_devices(device_type:DeviceType):
+async def get_all_devices_by_type(device_type:DeviceType):
     return context.devices.get_devices_by_type(device_type=device_type)
+
+@control_router.get("/tags/tag/{tag}/devices")
+async def get_all_devices_by_tag(tag):
+    return context.devices.get_devices_by_tag(tag=tag)
+
+@control_router.get("/tags/all")
+async def get_all_tags():
+    return context.devices.get_all_tags()
+
 
 @control_router.get("/light/{device_id}/state")
 async def get_light_state(device_id):

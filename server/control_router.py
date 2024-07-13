@@ -20,7 +20,11 @@ class HeaterState(str, Enum):
 class SocketState(str, Enum):
     ON = "on"
     OFF = "off"
-    
+
+class OvenState(str, Enum):
+    ON = "on"
+    OFF = "off"
+
 class ACState(str, Enum):
     ON = "on"
     OFF = "off"

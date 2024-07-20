@@ -1,4 +1,4 @@
-
+import time
 from enum import Enum
 from devices.generic import FanInterface, GenericDevice, LightInterface
 
@@ -57,8 +57,18 @@ class BroadlinkFanDevice(GenericDevice, FanInterface):
             self.toggle()
         
     def turn_off(self):
+        def check_success(intervals, interval=0.1):
+            for _ in range(intervals):
+                if not self.is_on():
+                    return True
+                time.sleep(interval)
+            return False
+
         if self.is_on():
             self.toggle()
+            if not check_success(25, 0.1):
+                raise Exception("Couldn't verify the light is off")
+            
         
     def start_fan2(self):
         self._connection.send_command_to_device(self._device_id, BroadlinkFanDevice.COMMANDS.FAN2)

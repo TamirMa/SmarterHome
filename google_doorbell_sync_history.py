@@ -21,7 +21,7 @@ TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 CHANNEL_ID = os.getenv("CHANNEL_ID")
 assert CHANNEL_ID and TELEGRAM_BOT_TOKEN
 
-REFRESH_EVERY_X_MINUTES=30
+REFRESH_EVERY_X_MINUTES=5
 
 
 class TelegramEventsSync(object):
@@ -39,7 +39,7 @@ class TelegramEventsSync(object):
         # Initialize the bot
     
         all_recent_camera_events = actions.get_all_camera_events(
-            end_time = pytz.timezone("Israel").localize(datetime.datetime.now()),
+            end_time = pytz.timezone("Israel").localize(datetime.datetime.now()-datetime.timedelta(minutes=3)),
             # 2.5 hours, a bit less than the maxmimum time of what Google 
             # is saving the videos (3 hours is risky because they can cut 
             # your videos and change the start time == event_id)

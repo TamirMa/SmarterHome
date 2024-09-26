@@ -4,7 +4,7 @@ from devices.generic import FanInterface, GenericDevice, LightInterface
 
 from tools.logger import logger
 
-class BroadlinkFanDevice(GenericDevice, FanInterface):
+class BroadlinkFanDevice(GenericDevice, FanInterface, LightInterface):
 
     class COMMANDS(str, Enum):
         LIGHT = 'Light'
@@ -63,7 +63,7 @@ class BroadlinkFanDevice(GenericDevice, FanInterface):
                     return True
                 time.sleep(interval)
             return False
-
+        
         if self.is_on():
             self.toggle()
             if not check_success(25, 0.1):

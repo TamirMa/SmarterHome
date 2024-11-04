@@ -4,20 +4,13 @@ from devices.generic import AirConditionInterface, CurtainInterface, LightInterf
 class TuyaBaseDevice(GenericDevice):
     def __init__(self, *args, linked_device=None, **kwargs):
         super(TuyaBaseDevice, self).__init__(*args, **kwargs)
-        self._d = self.initialize_device_method(self._device_id, linked_device=linked_device)
+        self._d = self._connection.initialize_device(self._device_id, linked_device=linked_device)
 
 
-class TuyaBasicDevice(TuyaBaseDevice):
-    @property
-    def initialize_device_method(self):
-        return self._connection.initialize_basic_device
-    
-class TuyaOutletDevice(TuyaBaseDevice):
-    @property
-    def initialize_device_method(self):
-        return self._connection.initialize_outlet_device
+class TuyaBLEGatewayDevice(TuyaBaseDevice):
+    pass
 
-class TuyaSwitchDevice(TuyaOutletDevice):
+class TuyaSwitchDevice(TuyaBaseDevice):
     def turn_on(self):
         self._d.set_status(True, self._sub_device_id)
 
@@ -33,7 +26,7 @@ class TuyaLightDevice(TuyaSwitchDevice, LightInterface):
 class TuyaSocketDevice(TuyaSwitchDevice, SocketInterface):
     pass
 
-class TuyaFingerbotDevice(TuyaBasicDevice, FingerbotInterface):
+class TuyaFingerbotDevice(TuyaBaseDevice, FingerbotInterface):
     def click(self, duration=0.2, arm_movement_percentages=100):
         status = self._d.status()
         if status["101"] != 'click':
@@ -44,7 +37,7 @@ class TuyaFingerbotDevice(TuyaBasicDevice, FingerbotInterface):
             self._d.set_value('102', arm_movement_percentages)
         self._d.set_value('1', True)
 
-class TuyaCurtainDevice(TuyaOutletDevice, CurtainInterface):
+class TuyaCurtainDevice(TuyaBaseDevice, CurtainInterface):
     # We don't really need to use the sub_device_id because on all of our devices
     # we only have 1 curtain per device, if in the future we want to have a seconday
     # curtain, the dps value to update should be 4
@@ -57,7 +50,7 @@ class TuyaCurtainDevice(TuyaOutletDevice, CurtainInterface):
     def stop(self):
         self._d.set_value('1', 'stop')
 
-class TuyaACDevice(TuyaOutletDevice, AirConditionInterface):
+class TuyaACDevice(TuyaBaseDevice, AirConditionInterface):
 
     def turn_on(self):
         self._d.set_value('1', True)
@@ -77,7 +70,7 @@ class TuyaACDevice(TuyaOutletDevice, AirConditionInterface):
         self._d.set_value('4', ac_mode)
 
 
-class TuyaHeaterDevice(TuyaOutletDevice, HeaterInterface):
+class TuyaHeaterDevice(TuyaBaseDevice, HeaterInterface):
     # We don't really need to use the sub_device_id because on all of our devices
     # we only have 1 curtain per device, if in the future we want to have a seconday
     # curtain, the dps value to update should be 4

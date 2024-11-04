@@ -1,5 +1,5 @@
 
-from devices.generic import AirConditionInterface, CurtainInterface, LightInterface, SocketInterface, GenericDevice, HeaterInterface
+from devices.generic import AirConditionInterface, CurtainInterface, LightInterface, SocketInterface, GenericDevice, HeaterInterface, FingerbotInterface
 
 
 class TuyaBaseDevice(GenericDevice):
@@ -22,6 +22,17 @@ class TuyaLightDevice(TuyaSwitchDevice, LightInterface):
 
 class TuyaSocketDevice(TuyaSwitchDevice, SocketInterface):
     pass
+
+class TuyaFingerbotDevice(TuyaBaseDevice, FingerbotInterface):
+    def click(self, duration=0.2, arm_movement_percentages=100):
+        status = self._d.status()
+        if status["101"] != 'click':
+            self._d.set_value('101', 'click')
+        if status["103"] != duration:
+            self._d.set_value('103', duration)
+        if status["102"] != arm_movement_percentages:
+            self._d.set_value('102', arm_movement_percentages)
+        self._d.set_value('1', True)
 
 class TuyaCurtainDevice(TuyaBaseDevice, CurtainInterface):
     # We don't really need to use the sub_device_id because on all of our devices

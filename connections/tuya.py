@@ -1,6 +1,6 @@
 import json
 from connections.connection import Connection
-from devices.tuya import TuyaACDevice, TuyaHeaterDevice, TuyaLightDevice, TuyaSocketDevice, TuyaSwitchDevice, TuyaCurtainDevice
+from devices.tuya import TuyaACDevice, TuyaHeaterDevice, TuyaLightDevice, TuyaSocketDevice, TuyaFingerbotDevice, TuyaCurtainDevice
 import tinytuya
 
 class TuyaConnection(Connection):
@@ -13,6 +13,7 @@ class TuyaConnection(Connection):
         "Curtain": TuyaCurtainDevice,
         "AC": TuyaACDevice,
         "Heater": TuyaHeaterDevice,
+        "Fingerbot": TuyaFingerbotDevice,
     }
 
     def __init__(self, *args, **kwargs):

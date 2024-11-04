@@ -31,7 +31,10 @@ class TuyaFingerbotDevice(TuyaBaseDevice, FingerbotInterface):
     def click(self, duration=0.2, arm_movement_percentages=100):
         status = self._d.status()
         if status == None:
-            raise Exception("Tuya device is not connected")
+            time.sleep(1)
+            status = self._d.status()
+            if status == None:
+                raise Exception("Tuya device is not connected")
         if status["dps"]["101"] != 'click':
             self._d.set_value('101', 'click')
         if status["dps"]["103"] != duration:

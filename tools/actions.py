@@ -39,7 +39,7 @@ def change_curtain_state(device_id, curtain_state : CurtainState):
         params={"curtain_state": curtain_state}
     )
 
-def start_dishwasher(device_id="Dishwasher"):
+def start_dishwasher(device_id):
     requests.post(
         f"http://{SERVER_IP}:{SERVER_PORT}/devices/dishwasher/{device_id}/start"
     )
@@ -69,7 +69,7 @@ def turn_off_ac(device_id):
         }
     )
 
-def turn_on_oven(device_id="AEGOven", program=AEGOven.PROGRAMS.TRUE_FAN_COOKING, temperature=180):
+def turn_on_oven(device_id, program=AEGOven.PROGRAMS.TRUE_FAN_COOKING, temperature=180):
     """
     Turn On - Oven
     """
@@ -81,7 +81,7 @@ def turn_on_oven(device_id="AEGOven", program=AEGOven.PROGRAMS.TRUE_FAN_COOKING,
         }
     )
 
-def turn_off_oven(device_id="AEGOven"):
+def turn_off_oven(device_id):
     """
     Turn Off - Oven
     """

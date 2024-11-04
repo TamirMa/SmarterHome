@@ -1,6 +1,6 @@
 from devices.manager import DeviceType
 
-from server.control_router import FanState, LightState, OvenState, SocketState
+from server.control_router import FanState, FingerbotCommands, LightState, OvenState, SocketState
 from tools import actions
 from tools.logger import logger
 
@@ -24,17 +24,17 @@ def run_action_command(command_details, test=False):
 
     elif command_type == DeviceType.Ovens:
         if command == OvenState.ON:
-            actions.turn_on_oven()
+            actions.turn_on_oven(device_id)
         elif command == OvenState.OFF:
-            actions.turn_off_oven()
+            actions.turn_off_oven(device_id)
 
     elif command_type == DeviceType.Fans:
         if command == FanState.FAN3:
-            actions.change_fan_state("MasterBedroomFan", FanState.FAN3)
+            actions.change_fan_state(device_id, FanState.FAN3)
         elif command == FanState.FAN2:
-            actions.change_fan_state("MasterBedroomFan", FanState.FAN3)
+            actions.change_fan_state(device_id, FanState.FAN3)
         elif command == FanState.STOP:
-            actions.change_fan_state("MasterBedroomFan", FanState.STOP)
+            actions.change_fan_state(device_id, FanState.STOP)
 
     elif command_type == DeviceType.Dishwashers:
         if test:
@@ -42,7 +42,7 @@ def run_action_command(command_details, test=False):
             return
             
         if command == "start":
-            actions.start_dishwasher()
+            actions.start_dishwasher(device_id)
 
 def run_action_commands(action_commands, test=False):
     for command in action_commands:

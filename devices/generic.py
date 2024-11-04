@@ -32,6 +32,10 @@ class LightInterface(SwitchInterface):
 class SocketInterface(SwitchInterface):
     pass
 
+class FingerbotInterface(object):
+    def click(self, duration=0.2, arm_movement_percentages=100):
+        raise NotImplemented()
+
 class CameraInterface(object):
     def get_events(self, start_time, end_time):
         raise NotImplemented()
@@ -107,7 +111,11 @@ class CurtainInterface(object):
         raise NotImplementedError()
 
 class OvenInterface(object):
-    pass
+    async def turn_on(self, program, temperature):
+        raise NotImplementedError()
+
+    async def turn_off(self):
+        raise NotImplementedError()
 
 class DishwasherInterface(object):
     pass

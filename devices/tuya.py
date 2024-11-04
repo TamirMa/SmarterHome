@@ -1,11 +1,15 @@
 
-from devices.generic import AirConditionInterface, CurtainInterface, LightInterface, SocketInterface, GenericDevice, HeaterInterface
-
+import time
+from devices.generic import AirConditionInterface, CurtainInterface, LightInterface, OvenInterface, SocketInterface, GenericDevice, HeaterInterface, FingerbotInterface
 
 class TuyaBaseDevice(GenericDevice):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, linked_device=None, **kwargs):
         super(TuyaBaseDevice, self).__init__(*args, **kwargs)
-        self._d = self._connection.initialize_device(self._device_id)
+        self._d = self._connection.initialize_device(self._device_id, linked_device=linked_device)
+
+
+class TuyaBLEGatewayDevice(TuyaBaseDevice):
+    pass
 
 class TuyaSwitchDevice(TuyaBaseDevice):
     def turn_on(self):
@@ -22,6 +26,31 @@ class TuyaLightDevice(TuyaSwitchDevice, LightInterface):
 
 class TuyaSocketDevice(TuyaSwitchDevice, SocketInterface):
     pass
+
+class TuyaFingerbotDevice(TuyaBaseDevice, FingerbotInterface):
+    def click(self, duration=0.2, arm_movement_percentages=100):
+        status = self._d.status()
+        if status == None:
+            time.sleep(1)
+            status = self._d.status()
+            if status == None:
+                raise Exception("Tuya device is not connected")
+        if status["dps"]["101"] != 'click':
+            self._d.set_value('101', 'click')
+        if status["dps"]["103"] != duration:
+            self._d.set_value('103', duration)
+        if status["dps"]["102"] != arm_movement_percentages:
+            self._d.set_value('102', arm_movement_percentages)
+        self._d.set_value('1', True)
+
+class TuyaFingerbotOvenDevice(TuyaFingerbotDevice, OvenInterface):
+    async def turn_on(self, program, temperature):
+        self.click(1, 100)
+        time.sleep(3)
+        self.click(1, 100)
+
+    async def turn_off(self):
+        self.click(4, 100)
 
 class TuyaCurtainDevice(TuyaBaseDevice, CurtainInterface):
     # We don't really need to use the sub_device_id because on all of our devices

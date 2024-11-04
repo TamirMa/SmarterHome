@@ -11,7 +11,7 @@ from connections.smartthings import SmartThingsConnection
 from connections.tuya import TuyaConnection
 from connections.yeelight import YeelightConnection
 from connections.google import GoogleConnection
-from devices.generic import AirConditionInterface, CameraInterface, HeaterInterface, CurtainInterface, DishwasherInterface, FanInterface, LightInterface, OvenInterface, SocketInterface, TVInterface
+from devices.generic import AirConditionInterface, CameraInterface, FingerbotInterface, HeaterInterface, CurtainInterface, DishwasherInterface, FanInterface, LightInterface, OvenInterface, SocketInterface, TVInterface
 
 from tools.logger import logger
 
@@ -35,6 +35,7 @@ class DeviceType(str, Enum):
     Heaters = "heater"
     Fans = "fan"
     TVs = "tv"
+    Fingerbots = "fingerbot"
     Cameras = "camera"
 
 class DeviceManager(object):
@@ -144,6 +145,8 @@ class DeviceManager(object):
             device_class = FanInterface
         elif device_type == DeviceType.Cameras:
             device_class = CameraInterface
+        elif device_type == DeviceType.Fingerbots:
+            device_class = FingerbotInterface
         elif device_type == DeviceType.ALL:
             device_type = None
         else:

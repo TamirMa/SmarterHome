@@ -1,6 +1,6 @@
 from enum import Enum
 from devices.aeg import AEGOven
-from devices.generic import AirConditionInterface, HeaterInterface, CurtainInterface, FanInterface, LightInterface, SocketInterface, SwitchInterface, TVInterface
+from devices.generic import AirConditionInterface, FingerbotInterface, HeaterInterface, CurtainInterface, FanInterface, LightInterface, SocketInterface, SwitchInterface, TVInterface
 from devices.homeconnect import BoschDishwasher
 from devices.smartthings import SamsungTVDevice
 from devices.manager import DeviceType
@@ -229,3 +229,8 @@ async def change_tv_state(device_id, tv_command: TVCommands):
     else:
         raise Exception(f"Invalid command for tv {tv_command}")
     
+@control_router.post("/fingerbot/{device_id}/click")
+async def click_fingerbot(device_id, duration=0.2, arm_movement_percentages=100):
+    fingerbot : FingerbotInterface = context.devices.get_device_by_name(device_id)
+    fingerbot.click(duration=duration, arm_movement_percentages=arm_movement_percentages)
+    return True

@@ -27,22 +27,15 @@ class TuyaSocketDevice(TuyaSwitchDevice, SocketInterface):
     pass
 
 class TuyaFingerbotDevice(TuyaBaseDevice, FingerbotInterface):
-
-    def __init__(self, *args, **kwargs):
-        super(TuyaFingerbotDevice, self).__init__(*args, **kwargs)
-
-        if self._d.cid == None:
-            raise Exception("Couldn't find Sub-Device")
-
     def click(self, duration=0.2, arm_movement_percentages=100):
         status = self._d.status()
         if status == None:
             raise Exception("Tuya device is not connected")
-        if status["101"] != 'click':
+        if status["dps"]["101"] != 'click':
             self._d.set_value('101', 'click')
-        if status["103"] != duration:
+        if status["dps"]["103"] != duration:
             self._d.set_value('103', duration)
-        if status["102"] != arm_movement_percentages:
+        if status["dps"]["102"] != arm_movement_percentages:
             self._d.set_value('102', arm_movement_percentages)
         self._d.set_value('1', True)
 

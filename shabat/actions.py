@@ -1,6 +1,6 @@
 from devices.manager import DeviceType
 
-from server.control_router import FanState, FingerbotCommands, LightState, OvenState, SocketState
+from server.control_router import FanState, LightState, OvenState, SocketState
 from tools import actions
 from tools.logger import logger
 

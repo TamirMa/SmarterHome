@@ -48,7 +48,7 @@ In order to run the service you need to prepare 3-4 files:
 TELEGRAM_BOT_TOKEN={YOUR TELEGRAM BOT TOKEN - keep empty for skipping the bot}
 TELEGRAM_ALLOWED_LIST={IDS OF YOUR TELEGRAM ACCOUNTS - keep empty for skipping the bot)
 CONNECTION_PARAMS_FILE=".connection_params.json"
-DEVICES_FILE=".devices.json"
+DEVICES_FILE="config/devices.json"
 SERVER_PORT=9000
 SERVER_IP=127.0.0.1
 ```
@@ -75,7 +75,7 @@ SERVER_IP=127.0.0.1
 }
 ```
 
-* .devices.json
+* config/devices.json
 ```
 [
     {

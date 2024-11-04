@@ -13,17 +13,17 @@ class HomeConnectConnection(Connection):
         "BoschDishwasher": BoschDishwasher,
     }
 
-    TOKEN_CACHE = ".home_connect.token"
-
     def __init__(self, *args, **kwargs):
         super(HomeConnectConnection, self).__init__(*args, **kwargs)
         
         if not (self._connection_params.get("clientId") and self._connection_params.get("clientSecret") and self._connection_params.get("redirectURI")):
             raise Exception("HomeConnect parameters are missing")
         
+        self._refresh_token_path = self._connection_params.get("refreshTokenFile")
+
         token = None
-        if os.path.exists(HomeConnectConnection.TOKEN_CACHE):
-            token = json.loads(open(HomeConnectConnection.TOKEN_CACHE, "r").read())
+        if os.path.exists(self._refresh_token_path):
+            token = json.loads(open(self._refresh_token_path, "r").read())
 
         client_id = self._connection_params.get("clientId")
         client_secret = self._connection_params.get("clientSecret")
@@ -32,7 +32,7 @@ class HomeConnectConnection(Connection):
         self._hc = HomeConnectAPI(token, client_id, client_secret, redirect_uri, token_updater=self.update_token_cache)
         
     def update_token_cache(self, token):
-        with open(HomeConnectConnection.TOKEN_CACHE, "w") as f:
+        with open(self._refresh_token_path, "w") as f:
             json.dump(token, f)
 
     def initialize_device(self, device_id):

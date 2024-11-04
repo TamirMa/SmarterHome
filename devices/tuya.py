@@ -1,5 +1,6 @@
 
-from devices.generic import AirConditionInterface, CurtainInterface, LightInterface, SocketInterface, GenericDevice, HeaterInterface, FingerbotInterface
+import time
+from devices.generic import AirConditionInterface, CurtainInterface, LightInterface, OvenInterface, SocketInterface, GenericDevice, HeaterInterface, FingerbotInterface
 
 class TuyaBaseDevice(GenericDevice):
     def __init__(self, *args, linked_device=None, **kwargs):
@@ -38,6 +39,15 @@ class TuyaFingerbotDevice(TuyaBaseDevice, FingerbotInterface):
         if status["dps"]["102"] != arm_movement_percentages:
             self._d.set_value('102', arm_movement_percentages)
         self._d.set_value('1', True)
+
+class TuyaFingerbotOvenDevice(TuyaFingerbotDevice, OvenInterface):
+    async def turn_on(self, program, temperature):
+        self.click(1, 100)
+        time.sleep(3)
+        self.click(1, 100)
+
+    async def turn_off(self):
+        self.click(4, 100)
 
 class TuyaCurtainDevice(TuyaBaseDevice, CurtainInterface):
     # We don't really need to use the sub_device_id because on all of our devices

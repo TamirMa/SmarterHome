@@ -1,6 +1,6 @@
 from enum import Enum
 from devices.aeg import AEGOven
-from devices.generic import AirConditionInterface, FingerbotInterface, HeaterInterface, CurtainInterface, FanInterface, LightInterface, SocketInterface, SwitchInterface, TVInterface
+from devices.generic import AirConditionInterface, FingerbotInterface, HeaterInterface, CurtainInterface, FanInterface, LightInterface, OvenInterface, SocketInterface, SwitchInterface, TVInterface
 from devices.homeconnect import BoschDishwasher
 from devices.smartthings import SamsungTVDevice
 from devices.manager import DeviceType
@@ -200,13 +200,19 @@ async def change_curtain_state(device_id, curtain_state: CurtainState):
 
 @control_router.post("/oven/{device_id}/on")
 async def turn_on_oven(device_id, program: AEGOven.PROGRAMS, temperature: int):
-    oven : AEGOven = context.devices.get_device_by_name(device_id)
+    device : OvenInterface = context.devices.get_device_by_name(device_id)
+    if device == None or not isinstance(device, OvenInterface):
+        raise Exception(f"This is not a oven device ({device_id})")
+    oven : OvenInterface = device
     return await oven.turn_on(program, temperature)
     
 
 @control_router.post("/oven/{device_id}/off")
 async def turn_off_oven(device_id):
-    oven : AEGOven = context.devices.get_device_by_name(device_id)
+    device : OvenInterface = context.devices.get_device_by_name(device_id)
+    if device == None or not isinstance(device, OvenInterface):
+        raise Exception(f"This is not a oven device ({device_id})")
+    oven : OvenInterface = device
     return await oven.turn_off()
 
 @control_router.post("/dishwasher/{device_id}/start")

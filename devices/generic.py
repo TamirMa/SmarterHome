@@ -111,7 +111,11 @@ class CurtainInterface(object):
         raise NotImplementedError()
 
 class OvenInterface(object):
-    pass
+    async def turn_on(self, program, temperature):
+        raise NotImplementedError()
+
+    async def turn_off(self):
+        raise NotImplementedError()
 
 class DishwasherInterface(object):
     pass

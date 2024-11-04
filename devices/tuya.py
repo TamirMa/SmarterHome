@@ -45,12 +45,12 @@ class TuyaFingerbotDevice(TuyaBaseDevice, FingerbotInterface):
 
 class TuyaFingerbotOvenDevice(TuyaFingerbotDevice, OvenInterface):
     async def turn_on(self, program, temperature):
-        self.click(1, 50)
+        self.click(1, 51)
         time.sleep(3)
-        self.click(1, 50)
+        self.click(1, 51)
 
     async def turn_off(self):
-        self.click(4, 50)
+        self.click(4, 51)
 
 class TuyaCurtainDevice(TuyaBaseDevice, CurtainInterface):
     # We don't really need to use the sub_device_id because on all of our devices

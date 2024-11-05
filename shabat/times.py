@@ -75,21 +75,34 @@ def get_shabat_times_online(location):
     '''
 
 def get_shabat_times():
-    times = []
+    def parse_date(date_str):
+        return datetime.datetime.strptime(item["date"], "%Y-%m-%dT%H:%M:%S%z").replace(tzinfo=None)
     
     res = get_shabat_times_online(location=LOCATION)
+    
+    times = []
     for item in res["items"]:
         if item["category"] == "candles":
+            datetime_obj = parse_date(item["date"])
             if len(times) > 0 and times[-1]["end"] is None:
-                times[-1]["end"] = datetime.datetime.strptime(item["date"], "%Y-%m-%dT%H:%M:%S%z").replace(tzinfo=None)
+                if datetime_obj < datetime.datetime.now():
+                    del times[-1]
+                else:
+                    times[-1]["end"] = datetime_obj
+            elif len(times) > 0:
+                break
             times.append({
-                "start": datetime.datetime.strptime(item["date"], "%Y-%m-%dT%H:%M:%S%z").replace(tzinfo=None),
+                "start": datetime_obj,
                 "end": None,
             })
         if item["category"] == "havdalah":
-            times[-1]["end"] = datetime.datetime.strptime(item["date"], "%Y-%m-%dT%H:%M:%S%z").replace(tzinfo=None)
+            datetime_obj = parse_date(item["date"])
+            if datetime_obj < datetime.datetime.now():
+                del times[-1]
+            else:
+                times[-1]["end"] = datetime_obj
     # Filter the time-sections that are in the past
-    return [time for time in times if time["end"] > datetime.datetime.now()]
+    return times
 
 
 

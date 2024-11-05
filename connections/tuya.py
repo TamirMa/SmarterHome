@@ -35,7 +35,7 @@ class TuyaConnection(Connection):
         parent_device = linked_device._d if linked_device is not None else None
         tinytuya_device = tinytuya.Device(
             dev_id=device_dict["id"],
-            # address=device_dict.get("ip"),
+            address=device_dict.get("ip"),
             cid=device_dict.get("uuid") if parent_device != None else None,
             local_key=device_dict["key"],
             parent=parent_device,

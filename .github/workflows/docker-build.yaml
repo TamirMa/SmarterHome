@@ -25,6 +25,9 @@ jobs:
           echo "DOCKER_IMAGE=ghcr.io/${REPO}" >> $GITHUB_ENV
           echo "TAGS=${DOCKER_IMAGE}:latest,${DOCKER_IMAGE}:${GITHUB_SHA::7}" >> $GITHUB_ENV
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Build and push
         uses: docker/build-push-action@v4
         with:

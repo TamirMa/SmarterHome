@@ -13,3 +13,4 @@ isodate>=0.6.1
 apscheduler>=3.10.4
 glocaltokens>=0.7.0
 python-dateutil>=2.9.0
+tuya-connector-python>=0.1.2

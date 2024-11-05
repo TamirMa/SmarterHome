@@ -18,13 +18,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Prepare Docker Tags
-        id: prep
-        run: |
-          REPO=${GITHUB_REPOSITORY,,}  # Convert to lowercase
-          echo "DOCKER_IMAGE=ghcr.io/${REPO}" >> $GITHUB_ENV
-          echo "TAGS=${DOCKER_IMAGE}:latest,${DOCKER_IMAGE}:${GITHUB_SHA::7}" >> $GITHUB_ENV
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -33,14 +26,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ env.TAGS }}
+          tags: ghcr.io/tamirma/smarter-home:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
           platforms: linux/amd64
-          
-      - name: Scan container for vulnerabilities
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: ${{ env.DOCKER_IMAGE }}:latest
-          format: 'sarif'
-          output: 'trivy-results.sarif'

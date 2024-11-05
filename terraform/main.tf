@@ -105,9 +105,3 @@ resource "google_compute_firewall" "ssh" {
   source_ranges = ["0.0.0.0/0"]
   target_tags   = ["ssh"]
 }
-
-# Output the external IP address
-output "instance_external_ip" {
-  value = google_compute_instance.iot_server.network_interface[0].access_config[0].nat_ip
-  description = "The external IP address of the instance."
-}

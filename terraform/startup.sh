@@ -39,4 +39,4 @@ gsutil cp gs://smarter-home-credentials-bucket/mayer/config/dev/* /opt/config/de
 
 # Pull and run your container
 docker pull ghcr.io/tamirma/smarter-home:latest
-docker run -d --restart always --env-file /opt/config/dev/.env -v /opt/config/dev:/config ghcr.io/tamirma/smarter-home:latest
+docker run -p 8080:8080 -d --restart always --env-file /opt/config/prod/prod.env -v /opt/config/prod:/config ghcr.io/tamirma/smarter-home:latest

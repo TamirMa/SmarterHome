@@ -29,12 +29,14 @@ class TuyaRemoteConnection(Connection):
 
     def send_command(self, device_id, commands):
         commands = {'commands': commands}
-        self._tuya_api.post(f'/v1.0/iot-03/devices/{device_id}/commands', commands)
+        response = self._tuya_api.post(f'/v1.0/iot-03/devices/{device_id}/commands', commands)
+        assert response["success"] == True
 
-    def set_properties(self, device_id, properties_dict, duration=1000):
-        commands = {'properties': json.dumps(properties_dict),"duration":duration}
-        self._tuya_api.post(f'/v2.0/cloud/thing/{device_id}/shadow/properties/desired"', commands)
-        time.sleep(3)
+    def set_properties(self, device_id, properties_dict):
+        commands = {'properties': json.dumps(properties_dict)}
+        response = self._tuya_api.post(f'/v2.0/cloud/thing/{device_id}/shadow/properties/issue', commands)
+        assert response["success"] == True
+        time.sleep(10)
 
     def get_properties(self, device_id):
         response = self._tuya_api.get(f'/v2.0/cloud/thing/{device_id}/shadow/properties')

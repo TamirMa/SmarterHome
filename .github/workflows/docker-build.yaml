@@ -57,6 +57,16 @@ jobs:
       run: terraform init
       working-directory: ${{ env.TERRAFORM_DIR }}
 
+    # Checks that all Terraform configuration files adhere to a canonical format
+    - name: Terraform Format
+      run: terraform fmt -check
+      working-directory: ${{ env.TERRAFORM_DIR }}
+
+    # Generates an execution plan for Terraform
+    - name: Terraform Plan
+      run: terraform plan -input=false
+      working-directory: ${{ env.TERRAFORM_DIR }}
+
     - name: Terraform Apply
-      run: terraform apply -auto-approve
+      run: terraform apply -auto-approve -input=false
       working-directory: ${{ env.TERRAFORM_DIR }}

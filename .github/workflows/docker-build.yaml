@@ -53,14 +53,19 @@ jobs:
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v2
 
-    - name: Terraform Init
-      run: terraform init
-      working-directory: ${{ env.TERRAFORM_DIR }}
-
     # Checks that all Terraform configuration files adhere to a canonical format
     - name: Terraform Format
       run: terraform fmt -check
       working-directory: ${{ env.TERRAFORM_DIR }}
+      continue-on-error: true
+
+    - name: Terraform Init
+      run: terraform init
+      working-directory: ${{ env.TERRAFORM_DIR }}
+
+    - name: Terraform validate
+        id: validate
+        run: terraform validate
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan

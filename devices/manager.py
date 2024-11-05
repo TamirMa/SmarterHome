@@ -9,6 +9,7 @@ from connections.homeconnect import HomeConnectConnection
 from connections.shelly import ShellyConnection
 from connections.smartthings import SmartThingsConnection
 from connections.tuya import TuyaConnection
+from connections.tuya_remote import TuyaRemoteConnection
 from connections.yeelight import YeelightConnection
 from connections.google import GoogleConnection
 from devices.generic import AirConditionInterface, CameraInterface, FingerbotInterface, HeaterInterface, CurtainInterface, DishwasherInterface, FanInterface, LightInterface, OvenInterface, SocketInterface, TVInterface
@@ -49,6 +50,7 @@ class DeviceManager(object):
         SmartThingsConnection,
         YeelightConnection,
         GoogleConnection,
+        TuyaRemoteConnection,
     ]
 
     def __init__(self) -> None:

@@ -7,7 +7,8 @@ from tools.logger import logger
 class TuyaRemoteFingerbotDevice(GenericDevice, FingerbotInterface):
     def single_click(self):
         logger.info(f"{self._device_id} - Sending a single click to device")
-        self._connection.send_command(self._device_id, [{'code': 'switch_1', 'value': True}])
+        self._connection.set_properties(self._device_id, {"switch_1" : True})
+
 
     def set_mode(self, new_mode):
         self._connection.set_properties(self._device_id, {"mode" : new_mode})
@@ -36,6 +37,7 @@ class TuyaRemoteFingerbotDevice(GenericDevice, FingerbotInterface):
             self.set_arm_movement_percentages(arm_movement_percentages)
 
         self.single_click()
+        time.sleep(0.5 + duration + 0.5) # Wait for the click to finish
 
 class TuyaRemoteFingerbotOvenDevice(TuyaRemoteFingerbotDevice, OvenInterface):
     async def turn_on(self, program, temperature):

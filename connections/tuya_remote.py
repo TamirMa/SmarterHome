@@ -30,13 +30,20 @@ class TuyaRemoteConnection(Connection):
     def send_command(self, device_id, commands):
         commands = {'commands': commands}
         response = self._tuya_api.post(f'/v1.0/iot-03/devices/{device_id}/commands', commands)
-        assert response["success"] == True
+        return response["success"] == True
 
-    def set_properties(self, device_id, properties_dict):
+    def set_properties(self, device_id, properties_dict, retries=10):
         commands = {'properties': json.dumps(properties_dict)}
-        response = self._tuya_api.post(f'/v2.0/cloud/thing/{device_id}/shadow/properties/issue', commands)
-        assert response["success"] == True
-        time.sleep(10)
+        for i in range(retries):
+            response = self._tuya_api.post(f'/v2.0/cloud/thing/{device_id}/shadow/properties/issue', commands)
+            if response["success"] == True:
+                # Wait for the property to update
+                time.sleep(10)
+                return True
+            else:
+                # Wait 5 seconds for the device to become online
+                time.sleep(5)
+        return False
 
     def get_properties(self, device_id):
         response = self._tuya_api.get(f'/v2.0/cloud/thing/{device_id}/shadow/properties')

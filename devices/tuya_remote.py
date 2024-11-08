@@ -41,7 +41,7 @@ class TuyaRemoteFingerbotDevice(GenericDevice, FingerbotInterface):
 
 class TuyaRemoteFingerbotOvenDevice(TuyaRemoteFingerbotDevice, OvenInterface):
     async def turn_on(self, program, temperature):
-        self.click(1, 65)
+        self.click(1, 51)
 
     async def turn_off(self):
-        self.click(1, 65)
+        self.click(1, 51)
